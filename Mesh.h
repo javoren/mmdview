@@ -1,10 +1,25 @@
 #pragma once
 
+#include <vector>
+
+// 3Dベクトルの定義
+typedef struct MMD3DVECTOR {
+    float x;
+    float y;
+    float z;
+} MMD3DVECTOR;
+
+// 2Dベクトルの定義
+typedef struct MMD2DXVECTOR {
+    float x;
+    float y;
+} MMD2DXVECTOR;
+
 /// メッシュの頂点データ
 struct Vertex {
-	D3DXVECTOR3 position;	// 頂点位置
-	D3DXVECTOR3 normal;		// 法線ベクトル
-	D3DXVECTOR2 texture;	// テクスチャ座標
+	MMD3DVECTOR position;	// 頂点位置
+	MMD3DVECTOR normal;		// 法線ベクトル
+	MMD2DXVECTOR texture;	// テクスチャ座標
 };
 
 /// メッシュのポリゴンデータ
@@ -15,39 +30,47 @@ struct Face {
 
 // メッシュデータ一時保存用構造体。独自形式データは一度この構造体に格納し、Mesh::SetMesh()でMesh::pMeshにセットする。
 struct MeshData {
-	vector<Vertex> vertices;
-	vector<Face> faces;
-	vector<D3DMATERIAL9> material;
-	vector<string> texture_filename;
+	std::vector<Vertex> vertices;
+	std::vector<Face> faces;
+//	std::vector<D3DMATERIAL9> material;
+//	std::vector<string> texture_filename;
 };
 
 /// メッシュのベース
 class Mesh {
 protected:
-	LPDIRECT3DDEVICE9 pDevice;			// Direct3Dデバイスオブジェクト
-	LPD3DXMESH pMesh;					// メッシュ
-	D3DMATERIAL9* pMeshMaterials;		// マテリアル配列
-	LPDIRECT3DTEXTURE9*	pMeshTextures;	// テクスチャ配列
-	DWORD dwNumMaterials;				// マテリアル・テクスチャ配列の大きさ
+//	LPDIRECT3DDEVICE9 pDevice;			// Direct3Dデバイスオブジェクト
+//	LPD3DXMESH pMesh;					// メッシュ
+//	D3DMATERIAL9* pMeshMaterials;		// マテリアル配列
+//	LPDIRECT3DTEXTURE9*	pMeshTextures;	// テクスチャ配列
+//	DWORD dwNumMaterials;				// マテリアル・テクスチャ配列の大きさ
 	void AddNormalVector(MeshData& meshData);// MeshDataに法線ベクトルを追加
 	void SetMesh(MeshData meshData);	// MeshDataをpMeshにセット
 public:
-	Mesh(LPDIRECT3DDEVICE9 pDevice);
+//	Mesh(LPDIRECT3DDEVICE9 pDevice);
+//	virtual void Draw(MMD3DVECTOR position, D3DXMATRIX rotation);
+//	virtual LPD3DXMESH GetMesh();
+//	virtual int GetNumMaterial();
+
+	Mesh(void);
 	virtual ~Mesh();
-	virtual void Draw(D3DXVECTOR3 position, D3DXMATRIX rotation);
-	virtual LPD3DXMESH GetMesh();
-	virtual int GetNumMaterial();
+//	virtual void Draw(MMD3DVECTOR position, D3DXMATRIX rotation);
+//	virtual LPD3DXMESH GetMesh();
+//	virtual int GetNumMaterial();
 };
 
+#if 0
 /// メッシュのビュー変換、射影変換を行なうカメラ
-class MeshCamera sealed {
+class MeshCamera {
 private:
 	LPDIRECT3DDEVICE9 pDevice;
 public:
 	MeshCamera(LPDIRECT3DDEVICE9 pDev);
-	void Look(D3DXVECTOR3 eyePoint, D3DXVECTOR3 lookAtPoint);
+	void Look(MMD3DVECTOR eyePoint, MMD3DVECTOR lookAtPoint);
 };
+#endif
 
+#if 0
 /// メッシュ用ライト
 class MeshLight sealed {
 private:
@@ -55,28 +78,13 @@ private:
 	D3DLIGHT9 light;
 public:
 	MeshLight(LPDIRECT3DDEVICE9 pDev);
-	void Illume(D3DXVECTOR3 direction);
+	void Illume(MMD3DVECTOR direction);
 };
+#endif
 
-/// Xファイルから読込んだメッシュ
-class XFileMesh sealed : public Mesh {
-public:
-	XFileMesh(LPCTSTR filename, LPDIRECT3DDEVICE9 pDevice);
-};
-
-/// メタセコイアファイルから読込んだメッシュ
-class MqoMesh sealed : public Mesh {
-private:
-	template <typename T> vector<T> MaterialPickOut(string str, char* name, int n); // マテリアル行の文字列から指定した名前の値の配列を取得
-	void LoadMaterial(ifstream& ifs, MeshData& meshData);
-	void LoadObject(ifstream& ifs, MeshData& meshData);
-	MeshData GetMeshDataFromMQO(LPCTSTR filename); // メタセコイアファイルからメッシュデータを読込む
-public:
-	MqoMesh(LPCTSTR filename, LPDIRECT3DDEVICE9 pDevice);
-};
 
 /// PMDファイルから読込んだメッシュ
-class PmdMesh sealed : public Mesh {
+class PmdMesh : public Mesh {
 /// PMD構造体定義
 #pragma pack(push,1)	//アラインメント制御をオフ
 	struct PmdHeader {
@@ -105,7 +113,8 @@ class PmdMesh sealed : public Mesh {
 		char texture_file_name[20];
 	};
 #pragma pack(pop)
-	void CopyMaterial(D3DMATERIAL9& material, PmdMaterial& pmdMaterial);	// PmdMaterialからD3DMATERIAL9にデータをコピー
+//	void CopyMaterial(D3DMATERIAL9& material, PmdMaterial& pmdMaterial);	// PmdMaterialからD3DMATERIAL9にデータをコピー
 public:
-	PmdMesh(LPCTSTR filename, LPDIRECT3DDEVICE9 pDevice);
+//	PmdMesh(LPCTSTR filename, LPDIRECT3DDEVICE9 pDevice);
+	PmdMesh(LPCTSTR filename);
 };
