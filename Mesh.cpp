@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Mesh.h"
 
-///// MeshƒNƒ‰ƒX /////
+///// Meshã‚¯ãƒ©ã‚¹ /////
 Mesh::Mesh(LPDIRECT3DDEVICE9 pDev) : pDevice(pDev), pMesh(0), pMeshTextures(0), pMeshMaterials(0) {
 }
 
@@ -18,7 +18,7 @@ void Mesh::AddNormalVector(MeshData& meshData) {
 		MMD3DVECTOR p[3];
 		for (unsigned int j = 0; j < 3; ++j) p[j] = meshData.vertices[meshData.faces[i].indices[j]].position;
 		D3DXPLANE plane;
-		D3DXPlaneFromPoints(&plane, &p[0], &p[1], &p[2]);	// ”²‚«æ‚è‚ÅŠm”F‚·‚éŒÀ‚èAplane‚Í‹KŠi‰»‚³‚ê‚Ä‚¢‚é‚Á‚Û‚¢
+		D3DXPlaneFromPoints(&plane, &p[0], &p[1], &p[2]);	// æŠœãå–ã‚Šã§ç¢ºèªã™ã‚‹é™ã‚Šã€planeã¯è¦æ ¼åŒ–ã•ã‚Œã¦ã„ã‚‹ã£ã½ã„
 		for (unsigned int j = 0; j < 3; ++j) meshData.vertices[meshData.faces[i].indices[j]].normal += MMD3DVECTOR(plane.a, plane.b, plane.c);
 		float l = D3DXVec3Length(&MMD3DVECTOR(plane.a, plane.b, plane.c));
 	}
@@ -49,16 +49,16 @@ void Mesh::SetMesh(MeshData meshData) {
 	for (DWORD i = 0; i < dwNumMaterials; ++i) pMeshTextures[i] = 0;
 	for (DWORD i = 0; i < dwNumMaterials; ++i) { 
 		pMeshMaterials[i] = meshData.material[i];
-		char tex_filename[256] = {0};		// UNICODE–¢‘Î‰ƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹–¼
-		TCHAR textureFilename[256] = {0};	// UNICODE/ƒ}ƒ‹ƒ`ƒoƒCƒg—¼‘Î‰ƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹–¼
-		if (strcpy_s(tex_filename, meshData.texture_filename[i].c_str())) throw TEXT("ƒeƒNƒXƒ`ƒƒ‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½");
+		char tex_filename[256] = {0};		// UNICODEæœªå¯¾å¿œãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«å
+		TCHAR textureFilename[256] = {0};	// UNICODE/ãƒãƒ«ãƒãƒã‚¤ãƒˆä¸¡å¯¾å¿œãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«å
+		if (strcpy_s(tex_filename, meshData.texture_filename[i].c_str())) throw TEXT("ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸ");
 #ifdef UNICODE
 		if (strlen(tex_filename) > 0) MultiByteToWideChar(CP_OEMCP, MB_PRECOMPOSED, tex_filename, strlen(tex_filename), textureFilename, (sizeof textureFilename)/2);
 #else
 		if (strlen(tex_filename) > 0) strcpy_s(textureFilename, tex_filename);
 #endif
-		if (lstrlen(textureFilename) > 0) // UNICODE/ƒ}ƒ‹ƒ`ƒoƒCƒg—¼‘Î‰ƒeƒNƒXƒ`ƒƒƒtƒ@ƒCƒ‹–¼‚©‚çƒeƒNƒXƒ`ƒƒ‚ğì¬
-			if(FAILED(D3DXCreateTextureFromFileEx(pDevice, textureFilename, 0, 0, 0, 0, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0xff000000, 0, 0, &pMeshTextures[i]))) throw TEXT("ƒeƒNƒXƒ`ƒƒ‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½");
+		if (lstrlen(textureFilename) > 0) // UNICODE/ãƒãƒ«ãƒãƒã‚¤ãƒˆä¸¡å¯¾å¿œãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«åã‹ã‚‰ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½œæˆ
+			if(FAILED(D3DXCreateTextureFromFileEx(pDevice, textureFilename, 0, 0, 0, 0, D3DFMT_UNKNOWN, D3DPOOL_DEFAULT, D3DX_DEFAULT, D3DX_DEFAULT, 0xff000000, 0, 0, &pMeshTextures[i]))) throw TEXT("ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸ");
 	}
 }
 
@@ -67,7 +67,7 @@ void Mesh::Draw(MMD3DVECTOR position, D3DXMATRIX rotation) {
 	D3DXMatrixTranslation(&matTrans, position.x, position.y, position.z);
 	matWorld = rotation*matTrans;
     pDevice->SetTransform(D3DTS_WORLD, &matWorld);
-	pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);	// ƒ|ƒŠƒSƒ“‚ÌDiffuseF‚Ì“§–¾“x‚ğƒeƒNƒXƒ`ƒƒ‚É”½‰f‚³‚¹‚é
+	pDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);	// ãƒãƒªã‚´ãƒ³ã®Diffuseè‰²ã®é€æ˜åº¦ã‚’ãƒ†ã‚¯ã‚¹ãƒãƒ£ã«åæ˜ ã•ã›ã‚‹
 	pDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
 	for (DWORD i = 0; i < dwNumMaterials; ++i) {
 		pDevice->SetMaterial(&pMeshMaterials[i]);
@@ -83,16 +83,16 @@ int Mesh::GetNumMaterial() { return dwNumMaterials; }
 
 
 #if 0
-///// ƒƒbƒVƒ…—pƒJƒƒ‰ /////
+///// ãƒ¡ãƒƒã‚·ãƒ¥ç”¨ã‚«ãƒ¡ãƒ© /////
 MeshCamera::MeshCamera(LPDIRECT3DDEVICE9 pDev) : pDevice(pDev) {
 }
 
 void MeshCamera::Look(MMD3DVECTOR eyePoint, MMD3DVECTOR lookAtPoint) {
-	const MMD3DVECTOR upVec(0, 1, 0);									// ã•ûƒxƒNƒgƒ‹
-	const float viewAngle = D3DX_PI/4;									// ‹–ìŠp
-	const float aspect = (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT;		// ƒAƒXƒyƒNƒg”ä = ƒrƒ…[‹óŠÔ‚Ì•/‚‚³ (MSDN‚Å‚Í‚‚³/•‚É‚È‚Á‚Ä‚¢‚é‚ªŠÔˆá‚¢)
-	const float nearZ = 0.1f;											// Å‹ß“_ (0‚É‚·‚é‚Æƒ|ƒŠƒSƒ“‚ª‹ß‚¢‚Éƒ`ƒ‰ƒcƒL‚ª‹N‚±‚é)
-	const float farZ = 2000.0f;											// Å‰““_
+	const MMD3DVECTOR upVec(0, 1, 0);									// ä¸Šæ–¹ãƒ™ã‚¯ãƒˆãƒ«
+	const float viewAngle = D3DX_PI/4;									// è¦–é‡è§’
+	const float aspect = (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT;		// ã‚¢ã‚¹ãƒšã‚¯ãƒˆæ¯” = ãƒ“ãƒ¥ãƒ¼ç©ºé–“ã®å¹…/é«˜ã• (MSDNã§ã¯é«˜ã•/å¹…ã«ãªã£ã¦ã„ã‚‹ãŒé–“é•ã„)
+	const float nearZ = 0.1f;											// æœ€è¿‘ç‚¹ (0ã«ã™ã‚‹ã¨ãƒãƒªã‚´ãƒ³ãŒè¿‘ã„æ™‚ã«ãƒãƒ©ãƒ„ã‚­ãŒèµ·ã“ã‚‹)
+	const float farZ = 2000.0f;											// æœ€é ç‚¹
 	D3DXMATRIXA16 matView, matProj;
 	D3DXMatrixLookAtLH(&matView, &eyePoint, &lookAtPoint, &upVec);
 	D3DXMatrixPerspectiveFovLH(&matProj, viewAngle, aspect, nearZ, farZ);
@@ -100,7 +100,7 @@ void MeshCamera::Look(MMD3DVECTOR eyePoint, MMD3DVECTOR lookAtPoint) {
 	pDevice->SetTransform(D3DTS_PROJECTION, &matProj);
 }
 
-///// ƒƒbƒVƒ…—pƒ‰ƒCƒg /////
+///// ãƒ¡ãƒƒã‚·ãƒ¥ç”¨ãƒ©ã‚¤ãƒˆ /////
 MeshLight::MeshLight(LPDIRECT3DDEVICE9 pDev) : pDevice(pDev) {
 	const D3DCOLORVALUE diffuse = {1, 1, 1, 0};
 	const D3DCOLORVALUE specular = {1, 1, 1, 0};
@@ -123,11 +123,11 @@ void MeshLight::Illume(MMD3DVECTOR direction) {
 }
 #endif
 
-/// PmdMeshƒNƒ‰ƒX
+/// PmdMeshã‚¯ãƒ©ã‚¹
 PmdMesh::PmdMesh(LPCTSTR filename, LPDIRECT3DDEVICE9 pDev) : Mesh(pDev) {
-	// PMDƒtƒ@ƒCƒ‹‚©‚çPMDƒf[ƒ^‚ğ’Šo
+	// PMDãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰PMDãƒ‡ãƒ¼ã‚¿ã‚’æŠ½å‡º
     ifstream ifs(filename, ios::binary);
-	if (ifs.fail()) throw TEXT("ƒtƒ@ƒCƒ‹‚ª‚ ‚è‚Ü‚¹‚ñ");
+	if (ifs.fail()) throw TEXT("ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã‚Šã¾ã›ã‚“");
 	ifs.read((char*)&pmdHeader, sizeof(pmdHeader));
 	unsigned long numPmdVertex;
 	ifs.read((char*)&numPmdVertex, sizeof(numPmdVertex));
@@ -142,12 +142,12 @@ PmdMesh::PmdMesh(LPCTSTR filename, LPDIRECT3DDEVICE9 pDev) : Mesh(pDev) {
 	PmdMaterial* pmdMaterial = new PmdMaterial[numPmdMaterial];
 	ifs.read((char*)pmdMaterial, sizeof(PmdMaterial)*numPmdMaterial);
 
-	// PMDƒf[ƒ^‚©‚çMeshData‚ÉƒRƒs[
+	// PMDãƒ‡ãƒ¼ã‚¿ã‹ã‚‰MeshDataã«ã‚³ãƒ”ãƒ¼
 	MeshData meshData;
 	for (unsigned int i = 0; i < numPmdVertex; ++i) {
 		Vertex v;
 		v.position = MMD3DVECTOR(pmdVertices[i].pos[0], pmdVertices[i].pos[1], pmdVertices[i].pos[2]);
-		v.position *= 0.1f;			// ”{—¦
+		v.position *= 0.1f;			// å€ç‡
 		v.normal= MMD3DVECTOR(pmdVertices[i].normal_vec[0], pmdVertices[i].normal_vec[1], pmdVertices[i].normal_vec[2]);
 		v.texture = MMD2DXVECTOR(pmdVertices[i].uv[0], pmdVertices[i].uv[1]);
 		meshData.vertices.push_back(v);
@@ -164,7 +164,7 @@ PmdMesh::PmdMesh(LPCTSTR filename, LPDIRECT3DDEVICE9 pDev) : Mesh(pDev) {
 	for (unsigned int i = 0; i < numPmdMaterial; ++i) {
 		CopyMaterial(material, pmdMaterial[i]);
 		meshData.material.push_back(material);
-		char tex[21] = {0};	// ƒtƒ@ƒCƒ‹–¼‚ª20byte‚Ì‚Æ‚«‚Ì‚½‚ß‚ÉÅŒã‚É0‚ğ’Ç‰Á
+		char tex[21] = {0};	// ãƒ•ã‚¡ã‚¤ãƒ«åãŒ20byteã®ã¨ãã®ãŸã‚ã«æœ€å¾Œã«0ã‚’è¿½åŠ 
 		memcpy(tex, pmdMaterial[i].texture_file_name, 20);
 		string s(tex);
 		s = s.substr(0, s.find("*"));	// temp
@@ -173,7 +173,7 @@ PmdMesh::PmdMesh(LPCTSTR filename, LPDIRECT3DDEVICE9 pDev) : Mesh(pDev) {
 		for (; j < material_end; ++j) meshData.faces[j/3].material_number = i;
 	}
 	delete pmdMaterial;
-	// MeshData‚ğƒOƒ‰ƒtƒBƒbƒNƒ{[ƒh‚Ìƒƒ‚ƒŠ‚ÉƒZƒbƒg
+	// MeshDataã‚’ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒœãƒ¼ãƒ‰ã®ãƒ¡ãƒ¢ãƒªã«ã‚»ãƒƒãƒˆ
 	SetMesh(meshData);
 }
 
