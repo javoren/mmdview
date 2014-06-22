@@ -1,34 +1,51 @@
 #pragma once
 
 #include <vector>
+#include <fstream>
 
-// 3Dãƒ™ã‚¯ãƒˆãƒ«ã®å®šç¾©
+// 3DƒxƒNƒgƒ‹‚Ì’è‹`
 typedef struct MMD3DVECTOR {
     float x;
     float y;
     float z;
+
+	MMD3DVECTOR(float ix, float iy, float iz){
+		x = ix;
+		y = iy;
+		z = iz;
+	}
+	MMD3DVECTOR(void){
+		x = y = z = 0.0f;
+	}
 } MMD3DVECTOR;
 
-// 2Dãƒ™ã‚¯ãƒˆãƒ«ã®å®šç¾©
+// 2DƒxƒNƒgƒ‹‚Ì’è‹`
 typedef struct MMD2DXVECTOR {
     float x;
     float y;
+    MMD2DXVECTOR(float ix, float iy){
+		x = ix;
+		y = iy;
+	}
+	MMD2DXVECTOR(void){
+		x = y = 0.0f;
+	}
 } MMD2DXVECTOR;
 
-/// ãƒ¡ãƒƒã‚·ãƒ¥ã®é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿
+/// ƒƒbƒVƒ…‚Ì’¸“_ƒf[ƒ^
 struct Vertex {
-	MMD3DVECTOR position;	// é ‚ç‚¹ä½ç½®
-	MMD3DVECTOR normal;		// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
-	MMD2DXVECTOR texture;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
+	MMD3DVECTOR position;	// ’¸“_ˆÊ’u
+	MMD3DVECTOR normal;		// –@üƒxƒNƒgƒ‹
+	MMD2DXVECTOR texture;	// ƒeƒNƒXƒ`ƒƒÀ•W
 };
 
-/// ãƒ¡ãƒƒã‚·ãƒ¥ã®ãƒãƒªã‚´ãƒ³ãƒ‡ãƒ¼ã‚¿
+/// ƒƒbƒVƒ…‚Ìƒ|ƒŠƒSƒ“ƒf[ƒ^
 struct Face {
-	unsigned short indices[3];		// 3é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
-	unsigned long material_number;	// ææ–™ç•ªå·
+	unsigned short indices[3];		// 3’¸“_‚ÌƒCƒ“ƒfƒbƒNƒX
+	unsigned long material_number;	// Ş—¿”Ô†
 };
 
-// ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä¸€æ™‚ä¿å­˜ç”¨æ§‹é€ ä½“ã€‚ç‹¬è‡ªå½¢å¼ãƒ‡ãƒ¼ã‚¿ã¯ä¸€åº¦ã“ã®æ§‹é€ ä½“ã«æ ¼ç´ã—ã€Mesh::SetMesh()ã§Mesh::pMeshã«ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
+// ƒƒbƒVƒ…ƒf[ƒ^ˆê•Û‘¶—p\‘¢‘ÌB“Æ©Œ`®ƒf[ƒ^‚Íˆê“x‚±‚Ì\‘¢‘Ì‚ÉŠi”[‚µAMesh::SetMesh()‚ÅMesh::pMesh‚ÉƒZƒbƒg‚·‚éB
 struct MeshData {
 	std::vector<Vertex> vertices;
 	std::vector<Face> faces;
@@ -36,16 +53,11 @@ struct MeshData {
 //	std::vector<string> texture_filename;
 };
 
-/// ãƒ¡ãƒƒã‚·ãƒ¥ã®ãƒ™ãƒ¼ã‚¹
+/// ƒƒbƒVƒ…‚Ìƒx[ƒX
 class Mesh {
 protected:
-//	LPDIRECT3DDEVICE9 pDevice;			// Direct3Dãƒ‡ãƒã‚¤ã‚¹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
-//	LPD3DXMESH pMesh;					// ãƒ¡ãƒƒã‚·ãƒ¥
-//	D3DMATERIAL9* pMeshMaterials;		// ãƒãƒ†ãƒªã‚¢ãƒ«é…åˆ—
-//	LPDIRECT3DTEXTURE9*	pMeshTextures;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£é…åˆ—
-//	DWORD dwNumMaterials;				// ãƒãƒ†ãƒªã‚¢ãƒ«ãƒ»ãƒ†ã‚¯ã‚¹ãƒãƒ£é…åˆ—ã®å¤§ãã•
-	void AddNormalVector(MeshData& meshData);// MeshDataã«æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’è¿½åŠ 
-	void SetMesh(MeshData meshData);	// MeshDataã‚’pMeshã«ã‚»ãƒƒãƒˆ
+	void AddNormalVector(MeshData& meshData);// MeshData‚É–@üƒxƒNƒgƒ‹‚ğ’Ç‰Á
+	void SetMesh(MeshData meshData);	// MeshData‚ğpMesh‚ÉƒZƒbƒg
 public:
 //	Mesh(LPDIRECT3DDEVICE9 pDevice);
 //	virtual void Draw(MMD3DVECTOR position, D3DXMATRIX rotation);
@@ -54,13 +66,11 @@ public:
 
 	Mesh(void);
 	virtual ~Mesh();
-//	virtual void Draw(MMD3DVECTOR position, D3DXMATRIX rotation);
-//	virtual LPD3DXMESH GetMesh();
-//	virtual int GetNumMaterial();
+	virtual void Draw(void);
 };
 
 #if 0
-/// ãƒ¡ãƒƒã‚·ãƒ¥ã®ãƒ“ãƒ¥ãƒ¼å¤‰æ›ã€å°„å½±å¤‰æ›ã‚’è¡Œãªã†ã‚«ãƒ¡ãƒ©
+/// ƒƒbƒVƒ…‚Ìƒrƒ…[•ÏŠ·AË‰e•ÏŠ·‚ğs‚È‚¤ƒJƒƒ‰
 class MeshCamera {
 private:
 	LPDIRECT3DDEVICE9 pDevice;
@@ -71,7 +81,7 @@ public:
 #endif
 
 #if 0
-/// ãƒ¡ãƒƒã‚·ãƒ¥ç”¨ãƒ©ã‚¤ãƒˆ
+/// ƒƒbƒVƒ…—pƒ‰ƒCƒg
 class MeshLight sealed {
 private:
 	LPDIRECT3DDEVICE9 pDevice;
@@ -83,10 +93,10 @@ public:
 #endif
 
 
-/// PMDãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­è¾¼ã‚“ã ãƒ¡ãƒƒã‚·ãƒ¥
+/// PMDƒtƒ@ƒCƒ‹‚©‚ç“Ç‚ñ‚¾ƒƒbƒVƒ…
 class PmdMesh : public Mesh {
-/// PMDæ§‹é€ ä½“å®šç¾©
-#pragma pack(push,1)	//ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆåˆ¶å¾¡ã‚’ã‚ªãƒ•
+/// PMD\‘¢‘Ì’è‹`
+#pragma pack(push,1)	//ƒAƒ‰ƒCƒ“ƒƒ“ƒg§Œä‚ğƒIƒt
 	struct PmdHeader {
 		unsigned char magic[3];
 		float version;
@@ -109,12 +119,12 @@ class PmdMesh : public Mesh {
 		float mirror_color[3];
 		unsigned char toon_index;
 		unsigned char edge_flag;
-		unsigned long face_vert_count;	// ã“ã®ææ–™ã®é¢é ‚ç‚¹æ•° â†’ ææ–™ç•ªå·iã®ãƒãƒªã‚´ãƒ³ç•ªå·ï¼š pmdMaterial[i - 1].face_vert_count/3 ã€œ pmdMaterial[i].face_vert_count/3 - 1
+		unsigned long face_vert_count;	// ‚±‚ÌŞ—¿‚Ì–Ê’¸“_” ¨ Ş—¿”Ô†i‚Ìƒ|ƒŠƒSƒ“”Ô†F pmdMaterial[i - 1].face_vert_count/3 ` pmdMaterial[i].face_vert_count/3 - 1
 		char texture_file_name[20];
 	};
 #pragma pack(pop)
-//	void CopyMaterial(D3DMATERIAL9& material, PmdMaterial& pmdMaterial);	// PmdMaterialã‹ã‚‰D3DMATERIAL9ã«ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
+//	void CopyMaterial(D3DMATERIAL9& material, PmdMaterial& pmdMaterial);	// PmdMaterial‚©‚çD3DMATERIAL9‚Éƒf[ƒ^‚ğƒRƒs[
 public:
 //	PmdMesh(LPCTSTR filename, LPDIRECT3DDEVICE9 pDevice);
-	PmdMesh(LPCTSTR filename);
+	PmdMesh(char* filename);
 };
