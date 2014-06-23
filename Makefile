@@ -8,6 +8,9 @@ CC = g++
 all: $(OBJS)
 	$(CC) -o $@ $(OBJS) $(LDFLAGS)
 
+clean:
+	rm -rf $(OBJS) $@
+
 .c.o:
 	$(CC) -c $<
 

@@ -2,9 +2,15 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 
+#include "Mesh.h"
 
 int WindowWidth = 512;
 int WindowHeight = 512;
+
+// ãƒ†ã‚¹ãƒˆç”¨é ‚ç‚¹é…åˆ—
+const GLfloat test_vertex[] = {
+	-0.9 , 0.9 , 0.9 , 0.9 , 0 , -0.9
+};
 
 void Reshape(int x, int y)
 {
@@ -26,34 +32,50 @@ void disp(void)
 	glLoadIdentity();
 	glViewport(0, 0, WindowWidth, WindowHeight);
 
-	//@‹“_‚Ìİ’è
+	//ã€€è¦–ç‚¹ã®è¨­å®š
 	gluLookAt( 
 		0.0, 0.0, -5.0,
 		0.0, 0.0, 0.0,
 		0.0, 1.0, 0.0 );
 
-	///@OŠpŒ`‚ğ•`‰æ@///
+	printf("passed\n");
+
+#if 1
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(2 , GL_FLOAT , 0 , test_vertex);
+	glBegin(GL_POLYGON); {
+		int i;
+		for(i = 0 ; i < 3 ; i++) glArrayElement(i);
+	} glEnd();
+#endif
+
+#if 0
+	///ã€€ä¸‰è§’å½¢ã‚’æç”»ã€€///
 	glBegin(GL_TRIANGLES);
 
-	//@’¸“_1
+	//ã€€é ‚ç‚¹1
 	glColor3d(1.0, 1.0, 0.0);		
 	glVertex3d(0.0, 0.825, 0.0);
 
-	//@’¸“_2
+	//ã€€é ‚ç‚¹2
 	glColor3d(0.0, 1.0, 1.0);
 	glVertex3d(-1.0, -0.825, 0.0);
 
-	//@’¸“_3
+	//ã€€é ‚ç‚¹3
 	glColor3d(1.0, 0.0, 1.0);
 	glVertex3d(1.0, -0.825, 0.0);
 
-	///@•`‰æI—¹@///
+	///ã€€æç”»çµ‚äº†ã€€///
 	glEnd();
+#endif
 
 	glutSwapBuffers();
 }
 
-int main(int argc , char ** argv) {
+int main(int argc , char ** argv)
+{
+	PmdMesh	mesh((char*)"/home/catalina/workspace/opengl/madoka/md_m.pmd");
+
 	glutInit(&argc , argv);
 	glutInitWindowPosition(100 , 50);
 	glutInitWindowSize(WindowWidth , WindowHeight);
