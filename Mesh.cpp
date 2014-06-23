@@ -1,5 +1,6 @@
 
 #include "Mesh.h"
+#include "stdlib.h"
 
 //サンプルコードではDirectXを利用する前提になっているので、
 // この位置でDirectXやWindowsの独自コードを置き換える処置を入れる
@@ -125,20 +126,21 @@ PmdMesh::PmdMesh(char* filename)
 		perror("ファイル読み込めなかった\n");
 	}
 	ifs.read((char*)&pmdHeader, sizeof(pmdHeader));
-	unsigned long numPmdVertex;
+	uint32_t numPmdVertex;
 	ifs.read((char*)&numPmdVertex, sizeof(numPmdVertex));
 	printf("!!passed %d\n", __LINE__ );
 	printf("vertexnum = %d\n", numPmdVertex);
+	printf("allocation size = %d\n", sizeof(PmdVertex)*numPmdVertex);
 	PmdVertex* pmdVertices = new PmdVertex[numPmdVertex];
 	printf("passed %d\n", __LINE__ );
 	ifs.read((char*)pmdVertices, sizeof(PmdVertex)*numPmdVertex);
-	unsigned long numPmdFace;
+	uint32_t numPmdFace;
 	printf("passed %d\n", __LINE__ );
 	ifs.read((char*)&numPmdFace, sizeof(numPmdFace));
-	unsigned short *pmdFaces = new unsigned short[numPmdFace];
+	uint16_t *pmdFaces = new unsigned short[numPmdFace];
 	printf("passed %d\n", __LINE__ );
 	ifs.read((char*)pmdFaces, sizeof(unsigned short)*numPmdFace);
-	unsigned long numPmdMaterial;
+	uint32_t numPmdMaterial;
 	printf("passed %d\n", __LINE__ );
 	ifs.read((char*)&numPmdMaterial, sizeof(numPmdMaterial));
 	printf("passed %d\n", __LINE__ );

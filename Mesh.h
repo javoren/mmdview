@@ -2,8 +2,10 @@
 
 #include <vector>
 #include <fstream>
+#include "stdint.h"
 
-// 3DƒxƒNƒgƒ‹‚Ì’è‹`
+
+// 3Dãƒ™ã‚¯ãƒˆãƒ«ã®å®šç¾©
 typedef struct MMD3DVECTOR {
     float x;
     float y;
@@ -19,7 +21,7 @@ typedef struct MMD3DVECTOR {
 	}
 } MMD3DVECTOR;
 
-// 2DƒxƒNƒgƒ‹‚Ì’è‹`
+// 2Dãƒ™ã‚¯ãƒˆãƒ«ã®å®šç¾©
 typedef struct MMD2DXVECTOR {
     float x;
     float y;
@@ -32,20 +34,20 @@ typedef struct MMD2DXVECTOR {
 	}
 } MMD2DXVECTOR;
 
-/// ƒƒbƒVƒ…‚Ì’¸“_ƒf[ƒ^
+/// ãƒ¡ãƒƒã‚·ãƒ¥ã®é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿
 struct Vertex {
-	MMD3DVECTOR position;	// ’¸“_ˆÊ’u
-	MMD3DVECTOR normal;		// –@üƒxƒNƒgƒ‹
-	MMD2DXVECTOR texture;	// ƒeƒNƒXƒ`ƒƒÀ•W
+	MMD3DVECTOR position;	// é ‚ç‚¹ä½ç½®
+	MMD3DVECTOR normal;		// æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
+	MMD2DXVECTOR texture;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
 };
 
-/// ƒƒbƒVƒ…‚Ìƒ|ƒŠƒSƒ“ƒf[ƒ^
+/// ãƒ¡ãƒƒã‚·ãƒ¥ã®ãƒãƒªã‚´ãƒ³ãƒ‡ãƒ¼ã‚¿
 struct Face {
-	unsigned short indices[3];		// 3’¸“_‚ÌƒCƒ“ƒfƒbƒNƒX
-	unsigned long material_number;	// Ş—¿”Ô†
+	unsigned short indices[3];		// 3é ‚ç‚¹ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+	unsigned long material_number;	// ææ–™ç•ªå·
 };
 
-// ƒƒbƒVƒ…ƒf[ƒ^ˆê•Û‘¶—p\‘¢‘ÌB“Æ©Œ`®ƒf[ƒ^‚Íˆê“x‚±‚Ì\‘¢‘Ì‚ÉŠi”[‚µAMesh::SetMesh()‚ÅMesh::pMesh‚ÉƒZƒbƒg‚·‚éB
+// ãƒ¡ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿ä¸€æ™‚ä¿å­˜ç”¨æ§‹é€ ä½“ã€‚ç‹¬è‡ªå½¢å¼ãƒ‡ãƒ¼ã‚¿ã¯ä¸€åº¦ã“ã®æ§‹é€ ä½“ã«æ ¼ç´ã—ã€Mesh::SetMesh()ã§Mesh::pMeshã«ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
 struct MeshData {
 	std::vector<Vertex> vertices;
 	std::vector<Face> faces;
@@ -53,11 +55,11 @@ struct MeshData {
 //	std::vector<string> texture_filename;
 };
 
-/// ƒƒbƒVƒ…‚Ìƒx[ƒX
+/// ãƒ¡ãƒƒã‚·ãƒ¥ã®ãƒ™ãƒ¼ã‚¹
 class Mesh {
 protected:
-	void AddNormalVector(MeshData& meshData);// MeshData‚É–@üƒxƒNƒgƒ‹‚ğ’Ç‰Á
-	void SetMesh(MeshData meshData);	// MeshData‚ğpMesh‚ÉƒZƒbƒg
+	void AddNormalVector(MeshData& meshData);// MeshDataã«æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã‚’è¿½åŠ 
+	void SetMesh(MeshData meshData);	// MeshDataã‚’pMeshã«ã‚»ãƒƒãƒˆ
 public:
 //	Mesh(LPDIRECT3DDEVICE9 pDevice);
 //	virtual void Draw(MMD3DVECTOR position, D3DXMATRIX rotation);
@@ -70,7 +72,7 @@ public:
 };
 
 #if 0
-/// ƒƒbƒVƒ…‚Ìƒrƒ…[•ÏŠ·AË‰e•ÏŠ·‚ğs‚È‚¤ƒJƒƒ‰
+/// ãƒ¡ãƒƒã‚·ãƒ¥ã®ãƒ“ãƒ¥ãƒ¼å¤‰æ›ã€å°„å½±å¤‰æ›ã‚’è¡Œãªã†ã‚«ãƒ¡ãƒ©
 class MeshCamera {
 private:
 	LPDIRECT3DDEVICE9 pDevice;
@@ -81,7 +83,7 @@ public:
 #endif
 
 #if 0
-/// ƒƒbƒVƒ…—pƒ‰ƒCƒg
+/// ãƒ¡ãƒƒã‚·ãƒ¥ç”¨ãƒ©ã‚¤ãƒˆ
 class MeshLight sealed {
 private:
 	LPDIRECT3DDEVICE9 pDevice;
@@ -93,10 +95,10 @@ public:
 #endif
 
 
-/// PMDƒtƒ@ƒCƒ‹‚©‚ç“Ç‚ñ‚¾ƒƒbƒVƒ…
+/// PMDãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­è¾¼ã‚“ã ãƒ¡ãƒƒã‚·ãƒ¥
 class PmdMesh : public Mesh {
-/// PMD\‘¢‘Ì’è‹`
-#pragma pack(push,1)	//ƒAƒ‰ƒCƒ“ƒƒ“ƒg§Œä‚ğƒIƒt
+/// PMDæ§‹é€ ä½“å®šç¾©
+	#pragma pack(push,1)	//ã‚¢ãƒ©ã‚¤ãƒ³ãƒ¡ãƒ³ãƒˆåˆ¶å¾¡ã‚’ã‚ªãƒ•
 	struct PmdHeader {
 		unsigned char magic[3];
 		float version;
@@ -107,9 +109,9 @@ class PmdMesh : public Mesh {
 		float pos[3];
 		float normal_vec[3];
 		float uv[2];
-		unsigned short bone_num[2];
-		unsigned char bone_weight;
-		unsigned char edge_flag;
+		uint16_t bone_num[2];
+		uint8_t bone_weight;
+		uint8_t edge_flag;
 	};
 	struct PmdMaterial{
 		float diffuse_color[3];
@@ -119,11 +121,11 @@ class PmdMesh : public Mesh {
 		float mirror_color[3];
 		unsigned char toon_index;
 		unsigned char edge_flag;
-		unsigned long face_vert_count;	// ‚±‚ÌŞ—¿‚Ì–Ê’¸“_” ¨ Ş—¿”Ô†i‚Ìƒ|ƒŠƒSƒ“”Ô†F pmdMaterial[i - 1].face_vert_count/3 ` pmdMaterial[i].face_vert_count/3 - 1
+		unsigned long face_vert_count;	// ã“ã®ææ–™ã®é¢é ‚ç‚¹æ•° â†’ ææ–™ç•ªå·iã®ãƒãƒªã‚´ãƒ³ç•ªå·ï¼š pmdMaterial[i - 1].face_vert_count/3 ã€œ pmdMaterial[i].face_vert_count/3 - 1
 		char texture_file_name[20];
 	};
 #pragma pack(pop)
-//	void CopyMaterial(D3DMATERIAL9& material, PmdMaterial& pmdMaterial);	// PmdMaterial‚©‚çD3DMATERIAL9‚Éƒf[ƒ^‚ğƒRƒs[
+//	void CopyMaterial(D3DMATERIAL9& material, PmdMaterial& pmdMaterial);	// PmdMaterialã‹ã‚‰D3DMATERIAL9ã«ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
 public:
 //	PmdMesh(LPCTSTR filename, LPDIRECT3DDEVICE9 pDevice);
 	PmdMesh(char* filename);
