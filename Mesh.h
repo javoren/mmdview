@@ -119,10 +119,10 @@ class PmdMesh : public Mesh {
 		float specularity;
 		float specular_color[3];
 		float mirror_color[3];
-		unsigned char toon_index;
-		unsigned char edge_flag;
-		unsigned long face_vert_count;	// この材料の面頂点数 → 材料番号iのポリゴン番号： pmdMaterial[i - 1].face_vert_count/3 〜 pmdMaterial[i].face_vert_count/3 - 1
-		char texture_file_name[20];
+		uint8_t toon_index;
+		uint8_t edge_flag;
+		uint32_t face_vert_count;	// この材料の面頂点数 → 材料番号iのポリゴン番号： pmdMaterial[i - 1].face_vert_count/3 〜 pmdMaterial[i].face_vert_count/3 - 1
+		uint8_t texture_file_name[20];
 	};
 #pragma pack(pop)
 //	void CopyMaterial(D3DMATERIAL9& material, PmdMaterial& pmdMaterial);	// PmdMaterialからD3DMATERIAL9にデータをコピー

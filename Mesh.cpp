@@ -125,29 +125,27 @@ PmdMesh::PmdMesh(char* filename)
 	if ( ifs.fail() ){
 		perror("ファイル読み込めなかった\n");
 	}
+
+	// 頂点データの読み込み
 	ifs.read((char*)&pmdHeader, sizeof(pmdHeader));
 	uint32_t numPmdVertex;
 	ifs.read((char*)&numPmdVertex, sizeof(numPmdVertex));
-	printf("!!passed %d\n", __LINE__ );
 	printf("vertexnum = %d\n", numPmdVertex);
 	printf("allocation size = %d\n", sizeof(PmdVertex)*numPmdVertex);
 	PmdVertex* pmdVertices = new PmdVertex[numPmdVertex];
-	printf("passed %d\n", __LINE__ );
 	ifs.read((char*)pmdVertices, sizeof(PmdVertex)*numPmdVertex);
+
+	// 面データの読み込み
 	uint32_t numPmdFace;
-	printf("passed %d\n", __LINE__ );
 	ifs.read((char*)&numPmdFace, sizeof(numPmdFace));
 	uint16_t *pmdFaces = new unsigned short[numPmdFace];
-	printf("passed %d\n", __LINE__ );
 	ifs.read((char*)pmdFaces, sizeof(unsigned short)*numPmdFace);
+
+	// マテリアルデータの読み込み
 	uint32_t numPmdMaterial;
-	printf("passed %d\n", __LINE__ );
 	ifs.read((char*)&numPmdMaterial, sizeof(numPmdMaterial));
-	printf("passed %d\n", __LINE__ );
 	PmdMaterial* pmdMaterial = new PmdMaterial[numPmdMaterial];
-	printf("passed %d\n", __LINE__ );
 	ifs.read((char*)pmdMaterial, sizeof(PmdMaterial)*numPmdMaterial);
-	printf("passed %d\n", __LINE__ );
 
 	// PMDデータからMeshDataにコピー
 	MeshData meshData;
