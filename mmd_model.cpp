@@ -95,38 +95,39 @@ void MMD_VertexArray::read(FILE* fp){
 
 
 Texture::Texture(void){
-    texture_index = 0;
+    texture_id = 0;
 }
 
 Texture::~Texture(){
     if(pBmp)
-        glDeleteTextures(1, &texture_index);
+        glDeleteTextures(1, &texture_id);
 };
 
-void Texture::load(const char* filename, unsigned int *tex_index){
+void Texture::load(const char* filename, GLuint tex_id){
     pBmp = NULL;
     FILE* fp = fopen(filename, "rb");
     if(fp != NULL){
         pBmp = BmpIO_Load(fp);
         if(pBmp != NULL){
             // OpenGL用にテクスチャつくる
-            glGenTextures(1, tex_index);
-            texture_index = *tex_index;
-            printf("texture_index = %d\n", texture_index);
-            glBindTexture(GL_TEXTURE_2D, texture_index);
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+            this->texture_id = tex_id;
+            printf("load texture_id = %d\n", this->texture_id);
+            glBindTexture(GL_TEXTURE_2D, this->texture_id);
             glTexImage2D(
                 GL_TEXTURE_2D ,0 ,GL_RGB ,pBmp->width ,pBmp->height,
                 0 ,GL_RGB ,GL_UNSIGNED_BYTE, pBmp->pColor );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+//          glBindTexture(GL_TEXTURE_2D, 0 );   // いらないかも
         }else{
             printf(">>>>>>pBmp == NULL\n");
         }
+        fclose(fp);
     }
 }
 
-unsigned int Texture::get_gl_texture_index(void){
-    return this->texture_index;
+unsigned int Texture::get_gl_texture_id(void){
+    return this->texture_id;
 }
 
 
@@ -144,7 +145,7 @@ void Material::setpath(std::string pathname){
     path = pathname;
 }
 
-void Material::read(FILE* fp){
+void Material::read(FILE* fp, GLuint texture_id){
     memset(texture_name, 0, 21);
     fread(diffuse_color, 4, 3, fp);
     fread(&alpha, 4, 1, fp);
@@ -157,7 +158,7 @@ void Material::read(FILE* fp){
     fread(texture_name, 1, 20, fp);
     std::string fullpath_texture = path + texture_name;
     printf("fullpath_texture = %s\n", fullpath_texture.c_str() );
-    texture.load( fullpath_texture.c_str(), &tex_index );
+    texture.load( fullpath_texture.c_str(), texture_id );
 }
 
 // マテリアルの配列
@@ -171,19 +172,99 @@ void MaterialArray::read(FILE* fp){
     fread(&count, 1, 4, fp);
     mat_array = new Material[count];
 
+    // テクスチャの上限数がここで確定するので、
+    // この位置でテクスチャIDを保持する配列をつくる
+    textureIds = new GLuint[count];
+    glGenTextures(count, textureIds);
+    printf("glGenTextures Array = %d\n", count);
+    for(int i = 0;i < count; i++){
+        printf("[index:%d == id=%d]\n", i, textureIds[i] );
+    }
+
+    // テクスチャを一枚ずつ読み込んでいく
+    // TODO: 異なるマテリアルでも同じファイル名を指していることもあるので、
+    // マテリアルとテクスチャを1:1の関係では効率悪そう。
     for(int i = 0;i < count; i++){
         mat_array[i].setpath(path);
-        mat_array[i].read(fp);
+        mat_array[i].read(fp, textureIds[i] );
     }
 }
 
 void MaterialArray::draw(void){
     uint32_t effect_draw_count = 0;
     for(int i = 0; i < count; i++){
-        printf("%d: (%d to %d)\n", i, effect_draw_count, mat_array[i].get_face_vert_count() );
         mat_array[i].draw(effect_draw_count);
         effect_draw_count += mat_array[i].get_face_vert_count();
     }
+}
+
+
+void Material::draw(uint32_t start_face)
+{
+    MMD_face*   face = &mmdfile.m_face;
+    int face_count = this->face_vert_count;
+
+//    glBindTexture(GL_TEXTURE_2D, texture.get_gl_texture_id() );
+    glBindTexture(GL_TEXTURE_2D, 9 );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+//    glFrontFace(GL_CCW);        // GL_CW(時計回りが表), GL_CCW(反時計回りが表)
+//    glEnable(GL_CULL_FACE);     //カリングON 
+
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glRotatef(M_PI, 0.0f, 1.0f, 0.0f);
+
+//  glBegin(GL_POLYGON);
+    printf("texture_id = %d\n", texture.get_gl_texture_id() );
+    for(int i = 0; i < face_count; i+=3 ){
+        for(int j = 0; j < 3; j++){
+            int index = face->face_index[start_face+i+j];
+            MMD_vertex* vert = &mmdfile.m_vertics.pVertex[index];
+            // TODO : opengl とdirectXで座標系が異なるので解決しないといけない
+//            glTexCoord2f( vert->u, fabsf(vert->v - 1.0f) ); // u=x, v=y
+
+            // バグの原因メモ
+            // テクスチャ座標以前の話で、
+            // すべてのマテリアルの描画で、同一のテクスチャハンドルを参照している様子
+            // 具体的には、md_m_head.bmp ファイルの内容のみがすべてのマテリアルに反映されている。
+            // (画像自身をすべて赤で塗りつぶすなどをして確認した。)
+
+
+            // 正しいテクスチャ座標系の確認用のコード
+            // 画像の左下隅のテクスチャのみ描画する。
+            // (服で表現すると、正面の画像＋α)
+            float v = fabsf(1.0f - vert->v);
+//            float v = vert->v;
+            float u = vert->u;
+//            if(v > 0.1f && u > 0.1f){
+                glTexCoord2f( u, v ); // u=x, v=y
+//            }else{
+//                glTexCoord2f( 0, 0 ); // u=x, v=y
+//            }
+            // テクスチャ座標系の調査メモ
+            // 
+            // OpenGLのテクスチャ座標はT,Sで表現される。
+            // 画像左下を原点として
+            // S ... 右方向が+の座標軸
+            // T ... 上方向が+の座標軸
+            //
+            // なお、glTexCoord2Fは(S,T)で指定する
+            //
+            // DirectXのテクスチャ座標はu,vで表現される
+            // 画像左上を原点として、
+            // U ... 右方向が+の座標系
+            // V ... 下方向が+の座標系
+            // 
+
+            glNormal3f(vert->nx, vert->ny, vert->nz);   // 法線
+            glVertex3f(vert->x, vert->y, vert->z);      // 頂点
+        }
+    }
+//    glEnd();
+    glBindTexture(GL_TEXTURE_2D, 0 );   // いらないかも
 }
 
 
@@ -210,30 +291,4 @@ void MMD_File::draw(void){
     m_materials.draw();
 }
 
-
-void Material::draw(uint32_t start_face)
-{
-    MMD_face*   face = &mmdfile.m_face;
-    int face_count = this->face_vert_count;
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_gl_texture_index() );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-
-    glFrontFace(GL_CCW);        // GL_CW(時計回りが表), GL_CCW(反時計回りが表)
-    glEnable(GL_CULL_FACE);     //カリングON 
-
-
-    printf("texture_index = %d\n", texture.get_gl_texture_index() );
-    for(int i = 0; i < face_count; i+=3 ){
-        for(int j = 0; j < 3; j++){
-            int index = face->face_index[start_face+i+j];
-            MMD_vertex* vert = &mmdfile.m_vertics.pVertex[index];
-            // TODO : opengl とdirectXで座標系が異なるので解決しないといけない
-            glTexCoord2f( vert->u, fabsf(vert->v - 1.0f) ); // u=x, v=y
-            glNormal3f(vert->nx, vert->ny, vert->nz);   // 法線
-            glVertex3f(vert->x, vert->y, vert->z);      // 頂点
-        }
-    }
-}
 

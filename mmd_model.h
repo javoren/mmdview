@@ -73,14 +73,14 @@ public:
 class Texture{
 private:
     IBMP*   pBmp;
-    unsigned int     texture_index;
+    GLuint  texture_id;
 
 public:
     Texture(void);
     virtual ~Texture(void);
 
-    void load(const char* filename, unsigned int *tex_index);
-    unsigned int get_gl_texture_index(void);
+    void load(const char* filename, GLuint tex_id);
+    unsigned int get_gl_texture_id(void);
 };
 
 
@@ -106,7 +106,7 @@ public:
     uint32_t get_face_vert_count(void);
     void setpath(std::string pathname);
 
-    void read(FILE* fp);
+    void read(FILE* fp, GLuint tex_id);
 
     void draw(uint32_t start_face);
 };
@@ -117,6 +117,7 @@ private:
     uint32_t    count;
     Material*   mat_array;
     std::string path;
+    GLuint      *textureIds;
 
 public:
     MaterialArray();
