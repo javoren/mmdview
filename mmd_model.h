@@ -37,6 +37,7 @@ public:
     void read(FILE* fp);
     MMD_face();
     virtual ~MMD_face();
+    void draw();
 };
 
 
@@ -57,15 +58,26 @@ public:
     void read(FILE* fp);
 };
 
+// プリミティブに関する情報をすべて保持する
+// (頂点, 法線, テクスチャ)
 class MMD_VertexArray{
 public:
     uint32_t    count;
 
-    MMD_vertex* pVertex;
+    // ファイルから読み込んだデータ列を保持する
+    MMD_vertex*     pVertex;
+
+    //----------------------------------
+    // OpenGLでレンダリングするためのバッファ領域を管理する
+    //----------------------------------
+    // vertex_bufferとindex_buffer
+    float           *p3dVerted;
+    unsigned int    *pIndexBuffer;
 
     MMD_VertexArray();
     virtual ~MMD_VertexArray();
     void read(FILE* fp);
+    void draw();
 };
 
 

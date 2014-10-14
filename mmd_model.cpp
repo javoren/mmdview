@@ -1,6 +1,9 @@
 
 #include <GL/gl.h>
 #include <GL/glut.h>
+#include <GL/glx.h>
+#define GL_GLEXT_PROTOTYPES     
+#include <GL/glext.h>
 
 #include <math.h>
 #include <string>
@@ -54,6 +57,9 @@ MMD_face::MMD_face(){
 MMD_face::~MMD_face(){
 }
 
+void MMD_face::draw()
+{
+}
 
 MMD_vertex::MMD_vertex(){
 }
@@ -61,7 +67,8 @@ MMD_vertex::MMD_vertex(){
 MMD_vertex::~MMD_vertex(){
 }
 
-void MMD_vertex::read(FILE* fp){
+void MMD_vertex::read(FILE* fp)
+{
     fread(&x, 1, 4, fp);
     fread(&y, 1, 4, fp);
     fread(&z, 1, 4, fp);
@@ -77,13 +84,21 @@ void MMD_vertex::read(FILE* fp){
 }
 
 
-MMD_VertexArray::MMD_VertexArray(){
+MMD_VertexArray::MMD_VertexArray()
+{
+    p3dVerted=NULL;
 }
 
-MMD_VertexArray::~MMD_VertexArray(){
+MMD_VertexArray::~MMD_VertexArray()
+{
+    if(p3dVerted){
+        delete []p3dVerted;
+        p3dVerted = NULL;
+    }
 };
 
-void MMD_VertexArray::read(FILE* fp){
+void MMD_VertexArray::read(FILE* fp)
+{
     fread(&count, 4, 1, fp);
     printf("vertex count == %d\n", count);       // デバッグ用
 
@@ -93,17 +108,36 @@ void MMD_VertexArray::read(FILE* fp){
     }
 }
 
-
-Texture::Texture(void){
-    texture_id = 0;
+void MMD_VertexArray::draw()
+{
+    // 頂点, 法線, テクスチャ座標ごとの配列に置き換える
+    GLint vert_size = 3;                // 頂点のサイズ(次元)
+    GLenum  vert_type = GL_FLOAT;       // 頂点の表現方法
+    GLsizei vert_count = count;
+    p3dVerted = new float[count*vert_size]; 
+    for(int i = 0; i < count; i++ ){
+        p3dVerted[i*3 + 0] = pVertex[i].x;
+        p3dVerted[i*3 + 1] = pVertex[i].y;
+        p3dVerted[i*3 + 2] = pVertex[i].z;
+    }
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(vert_size, vert_type, 0, p3dVerted);   // 頂点バッファ
+    printf("%s : vert array draw \n", __FUNCTION__);
+    printf("%s : vertex count = %d \n", __FUNCTION__, count);
 }
 
-Texture::~Texture(){
+Texture::Texture(void)
+{
+}
+
+Texture::~Texture()
+{
     if(pBmp)
         glDeleteTextures(1, &texture_id);
 };
 
-void Texture::load(const char* filename, GLuint tex_id){
+void Texture::load(const char* filename, GLuint tex_id)
+{
     pBmp = NULL;
     FILE* fp = fopen(filename, "rb");
     if(fp != NULL){
@@ -112,13 +146,16 @@ void Texture::load(const char* filename, GLuint tex_id){
             // OpenGL用にテクスチャつくる
             this->texture_id = tex_id;
             printf("load texture_id = %d\n", this->texture_id);
+            printf("id: %d = %s\n", this->texture_id, filename);
             glBindTexture(GL_TEXTURE_2D, this->texture_id);
             glTexImage2D(
                 GL_TEXTURE_2D ,0 ,GL_RGB ,pBmp->width ,pBmp->height,
                 0 ,GL_RGB ,GL_UNSIGNED_BYTE, pBmp->pColor );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-//          glBindTexture(GL_TEXTURE_2D, 0 );   // いらないかも
+            glFlush();
+            glBindTexture(GL_TEXTURE_2D, 0 );
+//            glBindTexture( GL_TEXTURE_2D, 10 );   // いらないかも
         }else{
             printf(">>>>>>pBmp == NULL\n");
         }
@@ -126,26 +163,31 @@ void Texture::load(const char* filename, GLuint tex_id){
     }
 }
 
-unsigned int Texture::get_gl_texture_id(void){
+unsigned int Texture::get_gl_texture_id(void)
+{
     return this->texture_id;
 }
 
 
 // マテリアルデータを表すクラス
-Material::Material(void){
+Material::Material(void)
+{
     tex_index = 0;
 }
 Material::~Material(){}
 
-uint32_t Material::get_face_vert_count(void){
+uint32_t Material::get_face_vert_count(void)
+{
     return face_vert_count;
 }
 
-void Material::setpath(std::string pathname){
+void Material::setpath(std::string pathname)
+{
     path = pathname;
 }
 
-void Material::read(FILE* fp, GLuint texture_id){
+void Material::read(FILE* fp, GLuint texture_id)
+{
     memset(texture_name, 0, 21);
     fread(diffuse_color, 4, 3, fp);
     fread(&alpha, 4, 1, fp);
@@ -157,23 +199,25 @@ void Material::read(FILE* fp, GLuint texture_id){
     fread(&face_vert_count, 4, 1, fp);
     fread(texture_name, 1, 20, fp);
     std::string fullpath_texture = path + texture_name;
-    printf("fullpath_texture = %s\n", fullpath_texture.c_str() );
     texture.load( fullpath_texture.c_str(), texture_id );
 }
 
 // マテリアルの配列
 MaterialArray::MaterialArray(){};
 MaterialArray::~MaterialArray(){};
-void MaterialArray::setpath(std::string pathname){
+void MaterialArray::setpath(std::string pathname)
+{
     path = pathname;
 }
 
-void MaterialArray::read(FILE* fp){
+void MaterialArray::read(FILE* fp)
+{
     fread(&count, 1, 4, fp);
     mat_array = new Material[count];
 
     // テクスチャの上限数がここで確定するので、
     // この位置でテクスチャIDを保持する配列をつくる
+    // TODO: テクスチャを使わないマテリアルの場合は無駄が出てしまうので、対応したい
     textureIds = new GLuint[count];
     glGenTextures(count, textureIds);
     printf("glGenTextures Array = %d\n", count);
@@ -190,7 +234,8 @@ void MaterialArray::read(FILE* fp){
     }
 }
 
-void MaterialArray::draw(void){
+void MaterialArray::draw(void)
+{
     uint32_t effect_draw_count = 0;
     for(int i = 0; i < count; i++){
         mat_array[i].draw(effect_draw_count);
@@ -203,9 +248,16 @@ void Material::draw(uint32_t start_face)
 {
     MMD_face*   face = &mmdfile.m_face;
     int face_count = this->face_vert_count;
+    glBegin(GL_TRIANGLES);
 
-//    glBindTexture(GL_TEXTURE_2D, texture.get_gl_texture_id() );
-    glBindTexture(GL_TEXTURE_2D, 9 );
+    // 10, 12-19が魔法少女服
+    if(texture.get_gl_texture_id()==10 || 12 <= texture.get_gl_texture_id() && texture.get_gl_texture_id() <= 19){
+    }else{
+        return;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, texture.get_gl_texture_id() );
+    printf("texture_id = %d\n", texture.get_gl_texture_id() );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
@@ -217,8 +269,16 @@ void Material::draw(uint32_t start_face)
     glLoadIdentity();
     glRotatef(M_PI, 0.0f, 1.0f, 0.0f);
 
-//  glBegin(GL_POLYGON);
-    printf("texture_id = %d\n", texture.get_gl_texture_id() );
+#if 0
+    {
+        GLsizei primitive_count = face_count*3;
+        printf("face=%d\n", start_face);
+        glDrawElements(GL_TRIANGLES, primitive_count, GL_UNSIGNED_INT, &face->face_index[start_face]);
+//        glDrawElements(GL_POLYGON, primitive_count, GL_UNSIGNED_INT, &face->face_index[start_face]);
+    }
+//    glDisableClientState(GL_VERTEX_ARRAY);
+
+#else
     for(int i = 0; i < face_count; i+=3 ){
         for(int j = 0; j < 3; j++){
             int index = face->face_index[start_face+i+j];
@@ -263,18 +323,23 @@ void Material::draw(uint32_t start_face)
             glVertex3f(vert->x, vert->y, vert->z);      // 頂点
         }
     }
-//    glEnd();
+#endif
+
     glBindTexture(GL_TEXTURE_2D, 0 );   // いらないかも
+    glEnd();
+    glFlush();
 }
 
 
 // テクスチャがこのpmdファイルの配下にあるので仕方なく。。
-void MMD_File::setpath(const char* pathname){
+void MMD_File::setpath(const char* pathname)
+{
     path = pathname;
 }
 
 // 引数で指定されたファイルを開いて、モデルデータを読み込む
-void MMD_File::load(const char* iFilename){
+void MMD_File::load(const char* iFilename)
+{
     std::string fullpath = path + iFilename;
     FILE* fp = fopen(fullpath.c_str(), "rb");
 
@@ -288,6 +353,7 @@ void MMD_File::load(const char* iFilename){
 };
 
 void MMD_File::draw(void){
+    m_vertics.draw();
     m_materials.draw();
 }
 
