@@ -250,12 +250,6 @@ void Material::draw(uint32_t start_face)
     int face_count = this->face_vert_count;
     glBegin(GL_TRIANGLES);
 
-    // 10, 12-19‚ª–‚–@­—•
-    if(texture.get_gl_texture_id()==10 || 12 <= texture.get_gl_texture_id() && texture.get_gl_texture_id() <= 19){
-    }else{
-        return;
-    }
-
     glBindTexture(GL_TEXTURE_2D, texture.get_gl_texture_id() );
     printf("texture_id = %d\n", texture.get_gl_texture_id() );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
