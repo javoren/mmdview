@@ -87,6 +87,8 @@ void MMD_vertex::read(FILE* fp)
 MMD_VertexArray::MMD_VertexArray()
 {
     p3dVerted=NULL;
+    p3dNormal=NULL;
+    pTexuv=NULL;
 }
 
 MMD_VertexArray::~MMD_VertexArray()
@@ -94,6 +96,14 @@ MMD_VertexArray::~MMD_VertexArray()
     if(p3dVerted){
         delete []p3dVerted;
         p3dVerted = NULL;
+    }
+    if(p3dNormal){
+        delete []p3dNormal;
+        p3dNormal = NULL;
+    }
+    if(pTexuv){
+        delete []pTexuv;
+        pTexuv = NULL;
     }
 };
 
@@ -112,12 +122,21 @@ void MMD_VertexArray::draw()
 {
     // 頂点, 法線, テクスチャ座標ごとの配列に置き換える
     p3dVerted = new GLfloat[count*3]; 
+    p3dNormal = new GLfloat[count*3]; 
+    pTexuv = new GLfloat[count*2];
     for(int i = 0; i < count; i++ ){
         p3dVerted[i*3 + 0] = pVertex[i].x;
         p3dVerted[i*3 + 1] = pVertex[i].y;
         p3dVerted[i*3 + 2] = pVertex[i].z;
+        p3dNormal[i*3 + 0] = pVertex[i].nx;
+        p3dNormal[i*3 + 1] = pVertex[i].ny;
+        p3dNormal[i*3 + 2] = pVertex[i].nz;
+        pTexuv[i*2+0] = pVertex[i].u;
+        pTexuv[i*2+1] = fabsf(1.0f - pVertex[i].v);
     }
-    glVertexPointer(3, GL_FLOAT, 0, p3dVerted);   // 頂点配列
+    glVertexPointer(3, GL_FLOAT, 0, p3dVerted);     // 頂点配列 (0はストライド)
+    glNormalPointer(GL_FLOAT, 0, p3dNormal);        // 法線配列
+    glTexCoordPointer(2, GL_FLOAT, 0, pTexuv);      // テクスチャ座標
     printf("%s : vert array draw \n", __FUNCTION__);
     printf("%s : vertex count = %d \n", __FUNCTION__, count);
 }
@@ -230,6 +249,7 @@ void MaterialArray::read(FILE* fp)
     }
 }
 
+
 void MaterialArray::draw(void)
 {
     uint32_t effect_draw_count = 0;
@@ -245,83 +265,23 @@ void Material::draw(uint32_t start_face)
     MMD_face*   face = &mmdfile.m_face;
     int face_count = this->face_vert_count;
 
-//    glBegin(GL_TRIANGLES);
-
-//    glBindTexture(GL_TEXTURE_2D, texture.get_gl_texture_id() );
+    glBindTexture(GL_TEXTURE_2D, texture.get_gl_texture_id() );
     printf("texture_id = %d\n", texture.get_gl_texture_id() );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
-//    glFrontFace(GL_CCW);        // GL_CW(時計回りが表), GL_CCW(反時計回りが表)
-//    glEnable(GL_CULL_FACE);     //カリングON 
-    glBindTexture(GL_TEXTURE_2D, 0 );
+    glFrontFace(GL_CCW);        // GL_CW(時計回りが表), GL_CCW(反時計回りが表)
+    glEnable(GL_CULL_FACE);     //カリングOFF
 
+    GLsizei primitive_count = face_count;
+    printf("primitive_count=%d\n", primitive_count);
+    printf("start_face=%d\n", start_face);
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glRotatef(M_PI, 0.0f, 1.0f, 0.0f);
+    glDrawElements(GL_TRIANGLES,                    // プリミティブの種類
+                    primitive_count,                // レンダリング要素の数
+                    GL_UNSIGNED_INT,                // インデックス配列の型
+                    &face->face_index[start_face]); // インデックス配列をさすポインタ
 
-#if 1
-    {
-        GLsizei primitive_count = face_count*3;
-        printf("primitive_count=%d\n", primitive_count);
-        printf("start_face=%d\n", start_face);
-
-        glDrawElements(GL_TRIANGLES,                    // プリミティブの種類
-                        primitive_count,                // レンダリング要素の数
-                        GL_UNSIGNED_INT,                // インデックス配列の型
-                        &face->face_index[start_face]); // インデックス配列をさすポインタ
-    }
-
-#else
-    for(int i = 0; i < face_count; i+=3 ){
-        for(int j = 0; j < 3; j++){
-            int index = face->face_index[start_face+i+j];
-            MMD_vertex* vert = &mmdfile.m_vertics.pVertex[index];
-            // TODO : opengl とdirectXで座標系が異なるので解決しないといけない
-//            glTexCoord2f( vert->u, fabsf(vert->v - 1.0f) ); // u=x, v=y
-
-            // バグの原因メモ
-            // テクスチャ座標以前の話で、
-            // すべてのマテリアルの描画で、同一のテクスチャハンドルを参照している様子
-            // 具体的には、md_m_head.bmp ファイルの内容のみがすべてのマテリアルに反映されている。
-            // (画像自身をすべて赤で塗りつぶすなどをして確認した。)
-
-
-            // 正しいテクスチャ座標系の確認用のコード
-            // 画像の左下隅のテクスチャのみ描画する。
-            // (服で表現すると、正面の画像＋α)
-            float v = fabsf(1.0f - vert->v);
-//            float v = vert->v;
-            float u = vert->u;
-//            if(v > 0.1f && u > 0.1f){
-                glTexCoord2f( u, v ); // u=x, v=y
-//            }else{
-//                glTexCoord2f( 0, 0 ); // u=x, v=y
-//            }
-            // テクスチャ座標系の調査メモ
-            // 
-            // OpenGLのテクスチャ座標はT,Sで表現される。
-            // 画像左下を原点として
-            // S ... 右方向が+の座標軸
-            // T ... 上方向が+の座標軸
-            //
-            // なお、glTexCoord2Fは(S,T)で指定する
-            //
-            // DirectXのテクスチャ座標はu,vで表現される
-            // 画像左上を原点として、
-            // U ... 右方向が+の座標系
-            // V ... 下方向が+の座標系
-            // 
-
-            glNormal3f(vert->nx, vert->ny, vert->nz);   // 法線
-            glVertex3f(vert->x, vert->y, vert->z);      // 頂点
-        }
-    }
-#endif
-//    glEnd();
-
-    glBindTexture(GL_TEXTURE_2D, 0 );   // いらないかも
     glFlush();
 }
 
@@ -349,9 +309,13 @@ void MMD_File::load(const char* iFilename)
 
 void MMD_File::draw(void){
     glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     m_vertics.draw();
     m_materials.draw();
     glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 

@@ -72,6 +72,8 @@ public:
     //----------------------------------
     // vertex_buffer‚Æindex_buffer
     GLfloat         *p3dVerted;
+    GLfloat         *p3dNormal;
+    GLfloat         *pTexuv;
     unsigned int    *pIndexBuffer;
 
     MMD_VertexArray();
