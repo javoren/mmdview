@@ -45,7 +45,7 @@ void MMD_face::read(FILE* fp){
     fread(&face_vert_count, 1, 4, fp);
     printf("face vert count = %d\n", face_vert_count);
 
-    face_index = new uint16_t[face_vert_count];
+    face_index = new GLuint[face_vert_count];
     for(int i = 0; i < face_vert_count; i++){
         fread(&face_index[i], 1, 2, fp);
     }
@@ -111,17 +111,13 @@ void MMD_VertexArray::read(FILE* fp)
 void MMD_VertexArray::draw()
 {
     // 頂点, 法線, テクスチャ座標ごとの配列に置き換える
-    GLint vert_size = 3;                // 頂点のサイズ(次元)
-    GLenum  vert_type = GL_FLOAT;       // 頂点の表現方法
-    GLsizei vert_count = count;
-    p3dVerted = new float[count*vert_size]; 
+    p3dVerted = new GLfloat[count*3]; 
     for(int i = 0; i < count; i++ ){
         p3dVerted[i*3 + 0] = pVertex[i].x;
         p3dVerted[i*3 + 1] = pVertex[i].y;
         p3dVerted[i*3 + 2] = pVertex[i].z;
     }
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(vert_size, vert_type, 0, p3dVerted);   // 頂点バッファ
+    glVertexPointer(3, GL_FLOAT, 0, p3dVerted);   // 頂点配列
     printf("%s : vert array draw \n", __FUNCTION__);
     printf("%s : vertex count = %d \n", __FUNCTION__, count);
 }
@@ -248,29 +244,34 @@ void Material::draw(uint32_t start_face)
 {
     MMD_face*   face = &mmdfile.m_face;
     int face_count = this->face_vert_count;
-    glBegin(GL_TRIANGLES);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_gl_texture_id() );
+//    glBegin(GL_TRIANGLES);
+
+//    glBindTexture(GL_TEXTURE_2D, texture.get_gl_texture_id() );
     printf("texture_id = %d\n", texture.get_gl_texture_id() );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
 //    glFrontFace(GL_CCW);        // GL_CW(時計回りが表), GL_CCW(反時計回りが表)
 //    glEnable(GL_CULL_FACE);     //カリングON 
+    glBindTexture(GL_TEXTURE_2D, 0 );
 
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glRotatef(M_PI, 0.0f, 1.0f, 0.0f);
 
-#if 0
+#if 1
     {
         GLsizei primitive_count = face_count*3;
-        printf("face=%d\n", start_face);
-        glDrawElements(GL_TRIANGLES, primitive_count, GL_UNSIGNED_INT, &face->face_index[start_face]);
-//        glDrawElements(GL_POLYGON, primitive_count, GL_UNSIGNED_INT, &face->face_index[start_face]);
+        printf("primitive_count=%d\n", primitive_count);
+        printf("start_face=%d\n", start_face);
+
+        glDrawElements(GL_TRIANGLES,                    // プリミティブの種類
+                        primitive_count,                // レンダリング要素の数
+                        GL_UNSIGNED_INT,                // インデックス配列の型
+                        &face->face_index[start_face]); // インデックス配列をさすポインタ
     }
-//    glDisableClientState(GL_VERTEX_ARRAY);
 
 #else
     for(int i = 0; i < face_count; i+=3 ){
@@ -318,9 +319,9 @@ void Material::draw(uint32_t start_face)
         }
     }
 #endif
+//    glEnd();
 
     glBindTexture(GL_TEXTURE_2D, 0 );   // いらないかも
-    glEnd();
     glFlush();
 }
 
@@ -347,8 +348,10 @@ void MMD_File::load(const char* iFilename)
 };
 
 void MMD_File::draw(void){
+    glEnableClientState(GL_VERTEX_ARRAY);
     m_vertics.draw();
     m_materials.draw();
+    glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 

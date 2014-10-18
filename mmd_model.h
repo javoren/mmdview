@@ -32,7 +32,7 @@ public:
 class MMD_face{
 public:
     uint32_t    face_vert_count;
-    uint16_t    *face_index;
+    GLuint      *face_index;
 
     void read(FILE* fp);
     MMD_face();
@@ -71,7 +71,7 @@ public:
     // OpenGLでレンダリングするためのバッファ領域を管理する
     //----------------------------------
     // vertex_bufferとindex_buffer
-    float           *p3dVerted;
+    GLfloat         *p3dVerted;
     unsigned int    *pIndexBuffer;
 
     MMD_VertexArray();
