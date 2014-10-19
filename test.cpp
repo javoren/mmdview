@@ -10,9 +10,9 @@
 #include "mmd_model.h"
 
 
-// ‚Æ‚è‚ ‚¦‚¸‚±‚±‚Éƒvƒƒgƒ^ƒCƒv‘‚¢‚Ä‚¨‚­
+// ã¨ã‚Šã‚ãˆãšã“ã“ã«ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—æ›¸ã„ã¦ãŠã
 
-// ‚Æ‚è‚ ‚¦‚¸
+// ã¨ã‚Šã‚ãˆãš
 MMD_File    mmdfile;
 Texture     madoka_magic;
 
@@ -35,9 +35,9 @@ void disp(void)
     glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
 
-    // mmd‘¤‚ÌƒR[ƒh‚ğ‚±‚±‚ÉÄŒ»‚µ‚Ä‚¨‚«A
-    // –â‘è“_‚ª‚Ç‚±‚É‚ ‚é‚©Šm”F‚·‚é
-    // --------‚±‚±‚©‚ç--------
+    // mmdå´ã®ã‚³ãƒ¼ãƒ‰ã‚’ã“ã“ã«å†ç¾ã—ã¦ãŠãã€
+    // å•é¡Œç‚¹ãŒã©ã“ã«ã‚ã‚‹ã‹ç¢ºèªã™ã‚‹
+    // --------ã“ã“ã‹ã‚‰--------
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(45.0, (double)WindowWidth/(double)WindowHeight, 0.1, 1000.0);
@@ -48,7 +48,7 @@ void disp(void)
         0.0, 10.0, 0.0,
         0.0, 1.0, 0.0 );
 
-    // ŒõŒ¹‚Ìİ’è
+    // å…‰æºã®è¨­å®š
     const GLfloat lightPos[] = { 0 , 0 , -2 , 0 };
     const GLfloat lightCol[] = { 1 , 1 , 1 , 1 };
     const GLfloat ambient [] = { 0.3f, 0.3f, 0.3f, 1.0f};
@@ -62,11 +62,11 @@ void disp(void)
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-//    glTranslatef(10.0f, 0.0f, -30.0f);        // ‰EèÀ•WŒnBz+‚ª‰æ–Êè‘O•ûŒü
+//    glTranslatef(10.0f, 0.0f, -30.0f);        // å³æ‰‹åº§æ¨™ç³»ã€‚z+ãŒç”»é¢æ‰‹å‰æ–¹å‘
 //    glRotatef(00, 0.0f, 1.0f, 0.0f);
-    // -------- ‚±‚±‚Ü‚Å --------
+    // -------- ã“ã“ã¾ã§ --------
 
-    // ƒp[ƒc‚²‚Æ‚É•`‰æ‚·‚é
+    // ãƒ‘ãƒ¼ãƒ„ã”ã¨ã«æç”»ã™ã‚‹
     mmdfile.draw();
 
     glPopMatrix();

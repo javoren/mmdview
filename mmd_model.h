@@ -8,13 +8,13 @@
 #include <memory.h>
 
 
-// ŠO•”‚Ìƒ‰ƒCƒuƒ‰ƒŠ
+// å¤–éƒ¨ã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒª
 // http://www.syuhitu.org/other/bmp/BmpIoLib_h.html
 #include "BmpIoLib.h"
 
 
 
-// MMDƒtƒ@ƒCƒ‹‚Ìƒwƒbƒ_‚ğ•\Œ»‚·‚éƒNƒ‰ƒX
+// MMDãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ˜ãƒƒãƒ€ã‚’è¡¨ç¾ã™ã‚‹ã‚¯ãƒ©ã‚¹
 class MMD_Header{
 private:
     char magic[3];
@@ -47,8 +47,8 @@ public:
     float       nx,ny,nz;
     float       u,v;
 
-    // ƒ‚ƒfƒ‹‚Ì•\¦‚¾‚¯‚È‚ç‚±‚±‚Ìƒf[ƒ^‚Íg‚í‚È‚¢‚Ì‚ÅA
-    // ‚Æ‚è‚ ‚¦‚¸•ú’u(read‚¾‚¯‚Í‚µ‚Æ‚­‚¯‚Ç‚àB)
+    // ãƒ¢ãƒ‡ãƒ«ã®è¡¨ç¤ºã ã‘ãªã‚‰ã“ã“ã®ãƒ‡ãƒ¼ã‚¿ã¯ä½¿ã‚ãªã„ã®ã§ã€
+    // ã¨ã‚Šã‚ãˆãšæ”¾ç½®(readã ã‘ã¯ã—ã¨ãã‘ã©ã‚‚ã€‚)
     uint16_t    bone_num[2];
     uint8_t     bone_weight;
     uint8_t     edge_flag;
@@ -58,19 +58,19 @@ public:
     void read(FILE* fp);
 };
 
-// ƒvƒŠƒ~ƒeƒBƒu‚ÉŠÖ‚·‚éî•ñ‚ğ‚·‚×‚Ä•Û‚·‚é
-// (’¸“_, –@ü, ƒeƒNƒXƒ`ƒƒ)
+// ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã«é–¢ã™ã‚‹æƒ…å ±ã‚’ã™ã¹ã¦ä¿æŒã™ã‚‹
+// (é ‚ç‚¹, æ³•ç·š, ãƒ†ã‚¯ã‚¹ãƒãƒ£)
 class MMD_VertexArray{
 public:
     uint32_t    count;
 
-    // ƒtƒ@ƒCƒ‹‚©‚ç“Ç‚İ‚ñ‚¾ƒf[ƒ^—ñ‚ğ•Û‚·‚é
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã‚“ã ãƒ‡ãƒ¼ã‚¿åˆ—ã‚’ä¿æŒã™ã‚‹
     MMD_vertex*     pVertex;
 
     //----------------------------------
-    // OpenGL‚ÅƒŒƒ“ƒ_ƒŠƒ“ƒO‚·‚é‚½‚ß‚Ìƒoƒbƒtƒ@—Ìˆæ‚ğŠÇ—‚·‚é
+    // OpenGLã§ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã™ã‚‹ãŸã‚ã®ãƒãƒƒãƒ•ã‚¡é ˜åŸŸã‚’ç®¡ç†ã™ã‚‹
     //----------------------------------
-    // vertex_buffer‚Æindex_buffer
+    // vertex_bufferã¨index_buffer
     GLfloat         *p3dVerted;
     GLfloat         *p3dNormal;
     GLfloat         *pTexuv;
@@ -83,7 +83,7 @@ public:
 };
 
 
-// ƒeƒNƒXƒ`ƒƒ‚ğŠÇ—‚·‚éƒNƒ‰ƒX
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
 class Texture{
 private:
     IBMP*   pBmp;
@@ -98,7 +98,7 @@ public:
 };
 
 
-// ƒ}ƒeƒŠƒAƒ‹ƒf[ƒ^‚ğ•\‚·ƒNƒ‰ƒX
+// ãƒãƒ†ãƒªã‚¢ãƒ«ãƒ‡ãƒ¼ã‚¿ã‚’è¡¨ã™ã‚¯ãƒ©ã‚¹
 class Material{
 private:
     float       diffuse_color[3];       // dr, dg, db
@@ -109,7 +109,7 @@ private:
     uint8_t     toon_index;
     uint8_t     edge_flag;
     uint32_t    face_vert_count;
-    char        texture_name[20+1];     // +1‚ÍNULL•¶š—p
+    char        texture_name[20+1];     // +1ã¯NULLæ–‡å­—ç”¨
     Texture     texture;
     std::string path;
     unsigned int    tex_index;
@@ -125,7 +125,7 @@ public:
     void draw(uint32_t start_face);
 };
 
-// ƒ}ƒeƒŠƒAƒ‹‚Ì”z—ñ
+// ãƒãƒ†ãƒªã‚¢ãƒ«ã®é…åˆ—
 class MaterialArray{
 private:
     uint32_t    count;

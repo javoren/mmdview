@@ -11,21 +11,21 @@
 #include <memory.h>
 
 
-// ŠO•”‚Ìƒ‰ƒCƒuƒ‰ƒŠ
+// å¤–éƒ¨ã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒª
 // http://www.syuhitu.org/other/bmp/BmpIoLib_h.html
 #include "BmpIoLib.h"
 
 #include "mmd_model.h"
 
 
-// TODO : ®—‚·‚éB‚±‚ê‚Í‰£‚è‘‚«‚µ‚½‚Æ‚«‚ÌcŠ[
-// ƒNƒ‰ƒX\‘¢‚ª®—‚Å‚«‚½‚çÁ‚¦‚é‚Í‚¸
+// TODO : æ•´ç†ã™ã‚‹ã€‚ã“ã‚Œã¯æ®´ã‚Šæ›¸ãã—ãŸã¨ãã®æ®‹éª¸
+// ã‚¯ãƒ©ã‚¹æ§‹é€ ãŒæ•´ç†ã§ããŸã‚‰æ¶ˆãˆã‚‹ã¯ãš
 extern MMD_File    mmdfile;
 extern Texture     madoka_magic;
 
 
 void MMD_Header::read(FILE* fp){
-    // ƒAƒ‰ƒCƒƒ“ƒg‚ª‚»‚ë‚Á‚Ä‚¢‚È‚¢‚Ì‚ÅA©‘O‚Å“Ç‚İ‚Ş
+    // ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆãŒãã‚ã£ã¦ã„ãªã„ã®ã§ã€è‡ªå‰ã§èª­ã¿è¾¼ã‚€
     fread(magic, 1, 3, fp);
     fread(&version, 1, 4, fp);
     fread(model_name, 1, 20, fp);
@@ -110,7 +110,7 @@ MMD_VertexArray::~MMD_VertexArray()
 void MMD_VertexArray::read(FILE* fp)
 {
     fread(&count, 4, 1, fp);
-    printf("vertex count == %d\n", count);       // ƒfƒoƒbƒO—p
+    printf("vertex count == %d\n", count);       // ãƒ‡ãƒãƒƒã‚°ç”¨
 
     pVertex = new MMD_vertex[count];
     for(int i = 0;i < count; i++){
@@ -120,7 +120,7 @@ void MMD_VertexArray::read(FILE* fp)
 
 void MMD_VertexArray::draw()
 {
-    // ’¸“_, –@ü, ƒeƒNƒXƒ`ƒƒÀ•W‚²‚Æ‚Ì”z—ñ‚É’u‚«Š·‚¦‚é
+    // é ‚ç‚¹, æ³•ç·š, ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™ã”ã¨ã®é…åˆ—ã«ç½®ãæ›ãˆã‚‹
     p3dVerted = new GLfloat[count*3]; 
     p3dNormal = new GLfloat[count*3]; 
     pTexuv = new GLfloat[count*2];
@@ -134,9 +134,9 @@ void MMD_VertexArray::draw()
         pTexuv[i*2+0] = pVertex[i].u;
         pTexuv[i*2+1] = fabsf(1.0f - pVertex[i].v);
     }
-    glVertexPointer(3, GL_FLOAT, 0, p3dVerted);     // ’¸“_”z—ñ (0‚ÍƒXƒgƒ‰ƒCƒh)
-    glNormalPointer(GL_FLOAT, 0, p3dNormal);        // –@ü”z—ñ
-    glTexCoordPointer(2, GL_FLOAT, 0, pTexuv);      // ƒeƒNƒXƒ`ƒƒÀ•W
+    glVertexPointer(3, GL_FLOAT, 0, p3dVerted);     // é ‚ç‚¹é…åˆ— (0ã¯ã‚¹ãƒˆãƒ©ã‚¤ãƒ‰)
+    glNormalPointer(GL_FLOAT, 0, p3dNormal);        // æ³•ç·šé…åˆ—
+    glTexCoordPointer(2, GL_FLOAT, 0, pTexuv);      // ãƒ†ã‚¯ã‚¹ãƒãƒ£åº§æ¨™
     printf("%s : vert array draw \n", __FUNCTION__);
     printf("%s : vertex count = %d \n", __FUNCTION__, count);
 }
@@ -158,7 +158,7 @@ void Texture::load(const char* filename, GLuint tex_id)
     if(fp != NULL){
         pBmp = BmpIO_Load(fp);
         if(pBmp != NULL){
-            // OpenGL—p‚ÉƒeƒNƒXƒ`ƒƒ‚Â‚­‚é
+            // OpenGLç”¨ã«ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¤ãã‚‹
             this->texture_id = tex_id;
             printf("load texture_id = %d\n", this->texture_id);
             printf("id: %d = %s\n", this->texture_id, filename);
@@ -170,7 +170,7 @@ void Texture::load(const char* filename, GLuint tex_id)
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
             glFlush();
             glBindTexture(GL_TEXTURE_2D, 0 );
-//            glBindTexture( GL_TEXTURE_2D, 10 );   // ‚¢‚ç‚È‚¢‚©‚à
+//            glBindTexture( GL_TEXTURE_2D, 10 );   // ã„ã‚‰ãªã„ã‹ã‚‚
         }else{
             printf(">>>>>>pBmp == NULL\n");
         }
@@ -184,7 +184,7 @@ unsigned int Texture::get_gl_texture_id(void)
 }
 
 
-// ƒ}ƒeƒŠƒAƒ‹ƒf[ƒ^‚ğ•\‚·ƒNƒ‰ƒX
+// ãƒãƒ†ãƒªã‚¢ãƒ«ãƒ‡ãƒ¼ã‚¿ã‚’è¡¨ã™ã‚¯ãƒ©ã‚¹
 Material::Material(void)
 {
     tex_index = 0;
@@ -217,7 +217,7 @@ void Material::read(FILE* fp, GLuint texture_id)
     texture.load( fullpath_texture.c_str(), texture_id );
 }
 
-// ƒ}ƒeƒŠƒAƒ‹‚Ì”z—ñ
+// ãƒãƒ†ãƒªã‚¢ãƒ«ã®é…åˆ—
 MaterialArray::MaterialArray(){};
 MaterialArray::~MaterialArray(){};
 void MaterialArray::setpath(std::string pathname)
@@ -230,9 +230,9 @@ void MaterialArray::read(FILE* fp)
     fread(&count, 1, 4, fp);
     mat_array = new Material[count];
 
-    // ƒeƒNƒXƒ`ƒƒ‚ÌãŒÀ”‚ª‚±‚±‚ÅŠm’è‚·‚é‚Ì‚ÅA
-    // ‚±‚ÌˆÊ’u‚ÅƒeƒNƒXƒ`ƒƒID‚ğ•Û‚·‚é”z—ñ‚ğ‚Â‚­‚é
-    // TODO: ƒeƒNƒXƒ`ƒƒ‚ğg‚í‚È‚¢ƒ}ƒeƒŠƒAƒ‹‚Ìê‡‚Í–³‘Ê‚ªo‚Ä‚µ‚Ü‚¤‚Ì‚ÅA‘Î‰‚µ‚½‚¢
+    // ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®ä¸Šé™æ•°ãŒã“ã“ã§ç¢ºå®šã™ã‚‹ã®ã§ã€
+    // ã“ã®ä½ç½®ã§ãƒ†ã‚¯ã‚¹ãƒãƒ£IDã‚’ä¿æŒã™ã‚‹é…åˆ—ã‚’ã¤ãã‚‹
+    // TODO: ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä½¿ã‚ãªã„ãƒãƒ†ãƒªã‚¢ãƒ«ã®å ´åˆã¯ç„¡é§„ãŒå‡ºã¦ã—ã¾ã†ã®ã§ã€å¯¾å¿œã—ãŸã„
     textureIds = new GLuint[count];
     glGenTextures(count, textureIds);
     printf("glGenTextures Array = %d\n", count);
@@ -240,9 +240,9 @@ void MaterialArray::read(FILE* fp)
         printf("[index:%d == id=%d]\n", i, textureIds[i] );
     }
 
-    // ƒeƒNƒXƒ`ƒƒ‚ğˆê–‡‚¸‚Â“Ç‚İ‚ñ‚Å‚¢‚­
-    // TODO: ˆÙ‚È‚éƒ}ƒeƒŠƒAƒ‹‚Å‚à“¯‚¶ƒtƒ@ƒCƒ‹–¼‚ğw‚µ‚Ä‚¢‚é‚±‚Æ‚à‚ ‚é‚Ì‚ÅA
-    // ƒ}ƒeƒŠƒAƒ‹‚ÆƒeƒNƒXƒ`ƒƒ‚ğ1:1‚ÌŠÖŒW‚Å‚ÍŒø—¦ˆ«‚»‚¤B
+    // ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’ä¸€æšãšã¤èª­ã¿è¾¼ã‚“ã§ã„ã
+    // TODO: ç•°ãªã‚‹ãƒãƒ†ãƒªã‚¢ãƒ«ã§ã‚‚åŒã˜ãƒ•ã‚¡ã‚¤ãƒ«åã‚’æŒ‡ã—ã¦ã„ã‚‹ã“ã¨ã‚‚ã‚ã‚‹ã®ã§ã€
+    // ãƒãƒ†ãƒªã‚¢ãƒ«ã¨ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚’1:1ã®é–¢ä¿‚ã§ã¯åŠ¹ç‡æ‚ªãã†ã€‚
     for(int i = 0;i < count; i++){
         mat_array[i].setpath(path);
         mat_array[i].read(fp, textureIds[i] );
@@ -270,29 +270,29 @@ void Material::draw(uint32_t start_face)
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
-    glFrontFace(GL_CCW);        // GL_CW(Œv‰ñ‚è‚ª•\), GL_CCW(”½Œv‰ñ‚è‚ª•\)
-    glEnable(GL_CULL_FACE);     //ƒJƒŠƒ“ƒOOFF
+    glFrontFace(GL_CCW);        // GL_CW(æ™‚è¨ˆå›ã‚ŠãŒè¡¨), GL_CCW(åæ™‚è¨ˆå›ã‚ŠãŒè¡¨)
+    glEnable(GL_CULL_FACE);     //ã‚«ãƒªãƒ³ã‚°OFF
 
     GLsizei primitive_count = face_count;
     printf("primitive_count=%d\n", primitive_count);
     printf("start_face=%d\n", start_face);
 
-    glDrawElements(GL_TRIANGLES,                    // ƒvƒŠƒ~ƒeƒBƒu‚Ìí—Ş
-                    primitive_count,                // ƒŒƒ“ƒ_ƒŠƒ“ƒO—v‘f‚Ì”
-                    GL_UNSIGNED_INT,                // ƒCƒ“ƒfƒbƒNƒX”z—ñ‚ÌŒ^
-                    &face->face_index[start_face]); // ƒCƒ“ƒfƒbƒNƒX”z—ñ‚ğ‚³‚·ƒ|ƒCƒ“ƒ^
+    glDrawElements(GL_TRIANGLES,                    // ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–ã®ç¨®é¡
+                    primitive_count,                // ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°è¦ç´ ã®æ•°
+                    GL_UNSIGNED_INT,                // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹é…åˆ—ã®å‹
+                    &face->face_index[start_face]); // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹é…åˆ—ã‚’ã•ã™ãƒã‚¤ãƒ³ã‚¿
 
     glFlush();
 }
 
 
-// ƒeƒNƒXƒ`ƒƒ‚ª‚±‚Ìpmdƒtƒ@ƒCƒ‹‚Ì”z‰º‚É‚ ‚é‚Ì‚Åd•û‚È‚­BB
+// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒã“ã®pmdãƒ•ã‚¡ã‚¤ãƒ«ã®é…ä¸‹ã«ã‚ã‚‹ã®ã§ä»•æ–¹ãªãã€‚ã€‚
 void MMD_File::setpath(const char* pathname)
 {
     path = pathname;
 }
 
-// ˆø”‚Åw’è‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ğŠJ‚¢‚ÄAƒ‚ƒfƒ‹ƒf[ƒ^‚ğ“Ç‚İ‚Ş
+// å¼•æ•°ã§æŒ‡å®šã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã„ã¦ã€ãƒ¢ãƒ‡ãƒ«ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
 void MMD_File::load(const char* iFilename)
 {
     std::string fullpath = path + iFilename;
