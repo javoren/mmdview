@@ -9,6 +9,8 @@
 
 #include "mmd_model.h"
 
+#define REDRAW_DELAY    (33)
+
 
 // とりあえずここにプロトタイプ書いておく
 
@@ -62,19 +64,24 @@ void disp(void)
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+    static int rot_r = 0;
+    rot_r += 3;
 //    glTranslatef(10.0f, 0.0f, -30.0f);        // 右手座標系。z+が画面手前方向
-//    glRotatef(00, 0.0f, 1.0f, 0.0f);
+    glRotatef(rot_r, 0.0f, 1.0f, 0.0f);
     // -------- ここまで --------
 
     // パーツごとに描画する
     mmdfile.draw();
 
     glPopMatrix();
+    glutSwapBuffers();
 }
 
 void timer(int value)
 {
-    disp();
+    glutPostRedisplay();
+    glutTimerFunc(REDRAW_DELAY , timer , 0);
 }
 
 
@@ -83,15 +90,17 @@ int main(int argc , char ** argv)
     glutInit(&argc , argv);
     glutInitWindowPosition(100 , 50);
     glutInitWindowSize(WindowWidth , WindowHeight);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 
     glutCreateWindow("Window caption");
     glutDisplayFunc(disp);
     glutReshapeFunc(Reshape);
-    glutTimerFunc(100 , timer , 0);
+    glutTimerFunc(REDRAW_DELAY , timer , 0);
 
+    // まどか
     mmdfile.setpath("/home/catalina/workspace/opengl/madoka/");
     mmdfile.load("md_m.pmd");
+
 
     glEnable( GL_NORMALIZE );
     glutMainLoop();

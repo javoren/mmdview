@@ -137,8 +137,6 @@ void MMD_VertexArray::draw()
     glVertexPointer(3, GL_FLOAT, 0, p3dVerted);     // 頂点配列 (0はストライド)
     glNormalPointer(GL_FLOAT, 0, p3dNormal);        // 法線配列
     glTexCoordPointer(2, GL_FLOAT, 0, pTexuv);      // テクスチャ座標
-    printf("%s : vert array draw \n", __FUNCTION__);
-    printf("%s : vertex count = %d \n", __FUNCTION__, count);
 }
 
 Texture::Texture(void)
@@ -266,7 +264,6 @@ void Material::draw(uint32_t start_face)
     int face_count = this->face_vert_count;
 
     glBindTexture(GL_TEXTURE_2D, texture.get_gl_texture_id() );
-    printf("texture_id = %d\n", texture.get_gl_texture_id() );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
@@ -274,8 +271,6 @@ void Material::draw(uint32_t start_face)
     glEnable(GL_CULL_FACE);     //カリングOFF
 
     GLsizei primitive_count = face_count;
-    printf("primitive_count=%d\n", primitive_count);
-    printf("start_face=%d\n", start_face);
 
     glDrawElements(GL_TRIANGLES,                    // プリミティブの種類
                     primitive_count,                // レンダリング要素の数
