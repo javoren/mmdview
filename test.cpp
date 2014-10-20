@@ -37,14 +37,11 @@ void disp(void)
     glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
     glPushMatrix();
 
-    // mmd側のコードをここに再現しておき、
-    // 問題点がどこにあるか確認する
-    // --------ここから--------
+    // 視点, ビューポートの設定
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(45.0, (double)WindowWidth/(double)WindowHeight, 0.1, 1000.0);
     glViewport(0, 0, WindowWidth, WindowHeight);
-
     gluLookAt( 
         0.0, 10.0, -32.0,
         0.0, 10.0, 0.0,
@@ -57,24 +54,43 @@ void disp(void)
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
     glLightfv(GL_LIGHT0, GL_POSITION , lightPos);
     glLightfv(GL_LIGHT0, GL_DIFFUSE , lightCol);
-    glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+
+    // テクスチャの有効化
+    glEnable(GL_TEXTURE_2D);
+
+    // Zバッファの有効化
     glEnable(GL_DEPTH_TEST);
 
+    // モデル座標系の設定を開始することを示す
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    // モデルの回転を行う実験コード
+    // TODO : 本来は不要なコードなので実験終わったら消す
     static int rot_r = 0;
     rot_r += 3;
-//    glTranslatef(10.0f, 0.0f, -30.0f);        // 右手座標系。z+が画面手前方向
     glRotatef(rot_r, 0.0f, 1.0f, 0.0f);
-    // -------- ここまで --------
 
     // パーツごとに描画する
     mmdfile.draw();
 
+    // ここまででMMDモデルの描画が完了
+    // 行列スタックを元に戻す
     glPopMatrix();
+
+    // アルファブレンディングの実験
+    // この部分は演出部分の実装実験で使う。
+    // TODO : 実験終了後に削除する
+/*
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ZERO);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+*/
+
     glutSwapBuffers();
 }
 
@@ -101,6 +117,11 @@ int main(int argc , char ** argv)
     mmdfile.setpath("/home/catalina/workspace/opengl/madoka/");
     mmdfile.load("md_m.pmd");
 
+    // ほむら
+    // ※: 魔法少女服のテクスチャ形式がtgaのため、読み込み失敗する。
+    // opencvの画像読み込み関数を使えば一発でいけそう
+//    mmdfile.setpath("/home/catalina/workspace/opengl/homura/");
+//    mmdfile.load("hm_m.pmd");
 
     glEnable( GL_NORMALIZE );
     glutMainLoop();
