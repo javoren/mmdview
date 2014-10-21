@@ -8,6 +8,7 @@
 #include <memory.h>
 
 #include "mmd_model.h"
+#include "mmd_motion.h"
 
 #define REDRAW_DELAY    (33)
 
@@ -16,6 +17,7 @@
 
 // とりあえず
 MMD_File    mmdfile;
+VMD_File    vmdfile;
 Texture     madoka_magic;
 
 int WindowWidth = 512;
@@ -116,6 +118,13 @@ int main(int argc , char ** argv)
     // まどか
     mmdfile.setpath("/home/catalina/workspace/opengl/madoka/");
     mmdfile.load("md_m.pmd");
+
+    // GUMI
+//    mmdfile.setpath("/home/catalina/workspace/opengl/Model/");
+//    mmdfile.load("gumi.pmd");
+
+    vmdfile.read("/home/catalina/workspace/opengl/madoka/koikito.vmd");
+//    return 0;
 
     // ほむら
     // ※: 魔法少女服のテクスチャ形式がtgaのため、読み込み失敗する。

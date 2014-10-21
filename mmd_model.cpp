@@ -292,6 +292,9 @@ void MMD_File::load(const char* iFilename)
 {
     std::string fullpath = path + iFilename;
     FILE* fp = fopen(fullpath.c_str(), "rb");
+    if(fp == NULL){
+        printf("file not open\n");
+    }
 
     m_header.read(fp);
     m_vertics.read(fp);
