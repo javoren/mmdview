@@ -287,6 +287,70 @@ void MMD_File::setpath(const char* pathname)
     path = pathname;
 }
 
+MMD_Bone::MMD_Bone()
+{
+}
+
+MMD_Bone::~MMD_Bone()
+{
+}
+
+void MMD_Bone::read(FILE* fp)
+{
+    fread(bone_name, 1, 20, fp);            // ボーン名
+    fread(&parent_bone_index, 2, 1, fp);    // 親ボーンインデックス
+    fread(&tail_pos_bone_index, 2, 1, fp);  // tail位置のボーンインデックス
+    fread(&bone_type,1, 1, fp);             // ボーンの種類
+    fread(&ik_parent_bone_index, 2, 1, fp);   // IKボーン番号(ない場合は0)
+    fread(bone_head_pos, 4, 3, fp);       // ボーンのヘッドの位置
+
+    printf("bone_name = %s, ", bone_name);
+    printf("parent index = %d\n", parent_bone_index);
+}
+
+void MMD_Bone::draw()
+{
+}
+
+void MMD_Bone::set_translate(float tx, float ty, float tz)
+{
+}
+
+void MMD_Bone::set_rotation(float qx, float qy, float qz, float qw)
+{
+}
+
+
+MMD_BoneArray::MMD_BoneArray()
+{
+}
+
+MMD_BoneArray::~MMD_BoneArray()
+{
+}
+
+void MMD_BoneArray::read(FILE* fp)
+{
+    // ボーンデータを読み込む
+    fread(&bone_count, 1, 2, fp);
+
+    bone_array = new MMD_Bone[bone_count];
+
+    // あとは繰り返し
+    for(int i = 0;i < bone_count; i++){
+        bone_array[i].read(fp);
+    }
+    printf("bone array read success\n");
+}
+
+void MMD_BoneArray::draw()
+{
+    // 全てのボーンを描画し
+    for(int i = 0;i < bone_count; i++){
+        bone_array[i].draw();
+    }
+}
+
 // 引数で指定されたファイルを開いて、モデルデータを読み込む
 void MMD_File::load(const char* iFilename)
 {
@@ -301,6 +365,7 @@ void MMD_File::load(const char* iFilename)
     m_face.read(fp);
     m_materials.setpath(path);
     m_materials.read(fp);
+    m_bones.read(fp);
 
     fclose(fp);
 };

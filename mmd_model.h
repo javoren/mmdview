@@ -142,6 +142,53 @@ public:
     void draw(void);
 };
 
+// ボーン情報
+class MMD_Bone{
+public: // 暫定
+    char        bone_name[20];          // ボーン名
+    uint16_t    parent_bone_index;      // 親ボーンインデックス
+    uint16_t    tail_pos_bone_index;    // tail位置のボーンインデックス
+    uint8_t     bone_type;              // ボーンの種類
+    uint16_t    ik_parent_bone_index;   // IKボーン番号(ない場合は0)
+    float       bone_head_pos[3];       // ボーンのヘッドの位置
+
+    // 描画用の情報
+    // ファイルフォーマットには含まれていない。
+    float       tx,ty,tz;
+    float       qx,qy,qz,qw;
+public:
+    MMD_Bone();
+    ~MMD_Bone();
+    void read(FILE* fp);
+    void draw();
+    void set_translate(float tx, float ty, float tz);
+    void set_rotation(float qx, float qy, float qz, float qw);
+};
+
+// ボーン情報の配列
+class MMD_BoneArray{
+public: // 暫定
+    uint16_t    bone_count;             // ボーン数
+    MMD_Bone    *bone_array;            // ボーンリスト(並び順に意味があるので注意)
+
+public:
+    MMD_BoneArray();
+    ~MMD_BoneArray();
+
+    void read(FILE* fp);
+
+    // デバッグ用機能
+    // ボーンのレンダリング
+    void draw();
+};
+
+
+// 設計メモ
+//      モーションデータはキーフレーム単位, ボーン単位に指定される。
+//      モーションデータから、ボーンに対して座標と回転角度が与えらえる
+//      ボーンから、頂点に対して、影響度などの情報が与えられる  
+//      頂点はただの配列として保持されている。
+//
 
 class MMD_File{
 public:
@@ -149,6 +196,7 @@ public:
     MMD_VertexArray     m_vertics;
     MMD_face            m_face;
     MaterialArray       m_materials;
+    MMD_BoneArray       m_bones;
     std::string         path;
 
     void setpath(const char* pathname);
@@ -156,5 +204,3 @@ public:
 
     void draw(void);
 };
-
-

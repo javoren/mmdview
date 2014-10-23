@@ -33,7 +33,7 @@ struct Quaternion{
 };
 
 class VMD_Motion{
-private:
+public:
     char        BoneName[15];           // ボーン名
     uint32_t    FrameNumber;            // フレーム番号
     float       px,py,pz;               // 位置
@@ -46,15 +46,11 @@ public:
 };
 
 class VMD_File{
-private:
+public:
     VMD_Header  vmd_header;             // ヘッダ
     VMD_Motion  *vmd_motion;            // モーションデータ
 
 public:
-    // デバッグしやすさの観点から、
-    // 開発中は publicメンバとしておいておく。
-    // 開発完了後に安定したら、privateにする。
-
     VMD_File();
     ~VMD_File();
 

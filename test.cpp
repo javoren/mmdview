@@ -24,7 +24,6 @@ int WindowWidth = 512;
 int WindowHeight = 512;
 
 
-
 void Reshape(int x, int y)
 {
     WindowWidth = x;
@@ -32,7 +31,6 @@ void Reshape(int x, int y)
     if ( WindowWidth < 1 ) WindowWidth = 1;
     if ( WindowHeight < 1 ) WindowHeight = 1;
 }
-
 
 void disp(void)
 {
@@ -69,11 +67,25 @@ void disp(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+#if 0
     // モデルの回転を行う実験コード
     // TODO : 本来は不要なコードなので実験終わったら消す
     static int rot_r = 0;
     rot_r += 3;
     glRotatef(rot_r, 0.0f, 1.0f, 0.0f);
+#else
+    static int  motion_index = 0;
+    VMD_Motion* motion_addr = vmdfile.vmd_motion;
+    while(motion_index == motion_addr->FrameNumber){
+        // モーションデータを取得して、表示するための情報に反映させる
+        // 次のモーションへ
+        motion_addr++;
+    }
+//    vmdfile.vmd_motion;
+//    float       px,py,pz;               // 位置
+//    Quaternion  rq;                     // 回転角(クォータニオン)
+    motion_index++;
+#endif
 
     // パーツごとに描画する
     mmdfile.draw();
@@ -96,12 +108,12 @@ void disp(void)
     glutSwapBuffers();
 }
 
+
 void timer(int value)
 {
     glutPostRedisplay();
     glutTimerFunc(REDRAW_DELAY , timer , 0);
 }
-
 
 int main(int argc , char ** argv)
 {
@@ -116,12 +128,12 @@ int main(int argc , char ** argv)
     glutTimerFunc(REDRAW_DELAY , timer , 0);
 
     // まどか
-    mmdfile.setpath("/home/catalina/workspace/opengl/madoka/");
-    mmdfile.load("md_m.pmd");
+//    mmdfile.setpath("/home/catalina/workspace/opengl/madoka/");
+//    mmdfile.load("md_m.pmd");
 
     // GUMI
-//    mmdfile.setpath("/home/catalina/workspace/opengl/Model/");
-//    mmdfile.load("gumi.pmd");
+    mmdfile.setpath("/home/catalina/workspace/opengl/Model/");
+    mmdfile.load("gumi.pmd");
 
     vmdfile.read("/home/catalina/workspace/opengl/madoka/koikito.vmd");
 //    return 0;
