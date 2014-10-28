@@ -1,16 +1,21 @@
 
+#pragma once
+
+
 #include <GL/gl.h>
 #include <GL/glut.h>
 
 #include <math.h>
-#include <string>
 #include <stdio.h>
 #include <memory.h>
+#include <map>
+#include <string>
 
+#include "mmd_model.h"
 
 // MMDファイルのヘッダを表現するクラス
 class VMD_Header{
-private:
+public: // とりあえず
     char        VmdHeader[30];      // "Vocaloid Motion Data 0002"
     char        VmdModelName[20];   // 名前が入っている
     uint32_t    motion_count;
@@ -49,11 +54,13 @@ class VMD_File{
 public:
     VMD_Header  vmd_header;             // ヘッダ
     VMD_Motion  *vmd_motion;            // モーションデータ
+    int         motion_index;
 
 public:
     VMD_File();
     ~VMD_File();
 
+    void setMmdMotion(MMD_File* pmd, int frame_number);
     void read(const char* filename);
 };
 

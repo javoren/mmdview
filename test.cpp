@@ -22,6 +22,7 @@ Texture     madoka_magic;
 
 int WindowWidth = 512;
 int WindowHeight = 512;
+int  motion_index = 0;
 
 
 void Reshape(int x, int y)
@@ -67,25 +68,10 @@ void disp(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-#if 0
-    // モデルの回転を行う実験コード
-    // TODO : 本来は不要なコードなので実験終わったら消す
-    static int rot_r = 0;
-    rot_r += 3;
-    glRotatef(rot_r, 0.0f, 1.0f, 0.0f);
-#else
-    static int  motion_index = 0;
-    VMD_Motion* motion_addr = vmdfile.vmd_motion;
-    while(motion_index == motion_addr->FrameNumber){
-        // モーションデータを取得して、表示するための情報に反映させる
-        // 次のモーションへ
-        motion_addr++;
-    }
-//    vmdfile.vmd_motion;
-//    float       px,py,pz;               // 位置
-//    Quaternion  rq;                     // 回転角(クォータニオン)
-    motion_index++;
-#endif
+    // vmdモーションを進め、適用する
+    vmdfile.setMmdMotion(&mmdfile, motion_index);
+//    motion_index++;
+    printf("motion frame number = %d\n", motion_index);
 
     // パーツごとに描画する
     mmdfile.draw();
@@ -93,17 +79,6 @@ void disp(void)
     // ここまででMMDモデルの描画が完了
     // 行列スタックを元に戻す
     glPopMatrix();
-
-    // アルファブレンディングの実験
-    // この部分は演出部分の実装実験で使う。
-    // TODO : 実験終了後に削除する
-/*
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ZERO);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-*/
 
     glutSwapBuffers();
 }

@@ -1,4 +1,6 @@
 
+#pragma once
+
 #include <GL/gl.h>
 #include <GL/glut.h>
 
@@ -6,6 +8,8 @@
 #include <string>
 #include <stdio.h>
 #include <memory.h>
+#include <map>
+#include <string>
 
 
 // 外部のライブラリ
@@ -154,6 +158,7 @@ public: // 暫定
 
     // 描画用の情報
     // ファイルフォーマットには含まれていない。
+    // TODO : ファイルフォーマットとは分離したい
     float       tx,ty,tz;
     float       qx,qy,qz,qw;
 public:
@@ -170,6 +175,8 @@ class MMD_BoneArray{
 public: // 暫定
     uint16_t    bone_count;             // ボーン数
     MMD_Bone    *bone_array;            // ボーンリスト(並び順に意味があるので注意)
+
+    std::map<std::string, int>  bone_name_dict;     // ボーン名をキーにして、インデックスを引くための辞書
 
 public:
     MMD_BoneArray();

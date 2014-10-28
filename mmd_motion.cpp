@@ -63,9 +63,6 @@ void VMD_Header::read(FILE* fp)
     fread(VmdHeader, 1, 30, fp);
     fread(VmdModelName, 1, 20, fp);
     fread(&motion_count, 1, 4, fp);
-//    printf("VmdHeader = %s\n", VmdHeader);
-//    printf("VmdModelName = %s\n", VmdModelName);
-//    printf("motion count = %d\n", motion_count);
 }
 
 VMD_Motion::VMD_Motion()
@@ -87,12 +84,13 @@ void VMD_Motion::read(FILE* fp)
     fread(&rq, 4, 4, fp);               // 回転角(クォータニオン)
     fread(Interpolation, 1, 4*4*4, fp); // 補完
 
-    printf("%d:BoneName = %s\n", FrameNumber, BoneName);
+//    printf("%d:BoneName = %s\n", FrameNumber, BoneName);
 }
 
 
 VMD_File::VMD_File()
 {
+    motion_index = 0;
 }
 
 VMD_File::~VMD_File()
@@ -113,5 +111,31 @@ void VMD_File::read(const char* filename)
         vmd_motion[i].read(fp);
     }
 
+}
+
+
+// mmdモデルに対して姿勢を設定する
+// TOOD : mmdファイル全部をもらってくる必要はないはずなので、
+//        リファクタリングを行う
+void VMD_File::setMmdMotion(MMD_File* pmd, int frame_number)
+{
+    // すべての姿勢情報から、目的のフレームの情報のみを抽出して、modelに設定する
+    for(uint32_t i = 0;i < vmd_header.motion_count; i++){
+        if( vmd_motion[i].FrameNumber == frame_number ){
+            float px = vmd_motion[i].px;
+            float py = vmd_motion[i].py;
+            float pz = vmd_motion[i].pz;
+            std::string bone_name = vmd_motion[i].BoneName;
+            int index = pmd->m_bones.bone_name_dict[bone_name];
+    
+            printf("draw motion %d, index =%d\n", i, index);
+
+            glPushMatrix();
+
+            pmd->m_bones.bone_array[index].set_translate(px, py, pz);
+
+            glPopMatrix();
+        }
+    }
 }
 

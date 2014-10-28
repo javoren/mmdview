@@ -310,6 +310,9 @@ void MMD_Bone::read(FILE* fp)
 
 void MMD_Bone::draw()
 {
+    glTranslatef(tx, ty, tz);
+    // glutSolidCone(底面の半径,円錐の高さ,円の分割数,高さの分割数)　
+    glutSolidCone(1, 2, 10, 1);
 }
 
 void MMD_Bone::set_translate(float tx, float ty, float tz)
@@ -341,13 +344,21 @@ void MMD_BoneArray::read(FILE* fp)
         bone_array[i].read(fp);
     }
     printf("bone array read success\n");
+
+    // ボーン名をキーにしたインデックスを作成
+    for(int i = 0; i < bone_count; i++){
+        std::string bone_name_str = bone_array[i].bone_name;
+        bone_name_dict[bone_name_str] = i;
+    }
 }
 
 void MMD_BoneArray::draw()
 {
     // 全てのボーンを描画し
     for(int i = 0;i < bone_count; i++){
+        glPushMatrix();
         bone_array[i].draw();
+        glPopMatrix();
     }
 }
 
@@ -374,8 +385,9 @@ void MMD_File::draw(void){
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    m_vertics.draw();
-    m_materials.draw();
+//    m_vertics.draw();
+//    m_materials.draw();
+    m_bones.draw();
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
