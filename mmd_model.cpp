@@ -24,6 +24,42 @@ extern MMD_File    mmdfile;
 extern Texture     madoka_magic;
 
 
+//演算子のオーバーロード Quaternionの積
+Quaternion & operator *( Quaternion &q1, Quaternion &q2 )
+{
+    Quaternion q0={
+        q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z,
+        q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y,
+        q1.w * q2.y - q1.x * q2.z + q1.y * q2.w + q1.z * q2.x,
+        q1.w * q2.z + q1.x * q2.y - q1.y * q2.x + q1.z * q2.w,
+    };
+    q1=q0;
+    return q1;
+}
+
+//クォータニオンから回転行列を算出
+// r = 16*16のopenGL座標系に対応した回転行列
+void qtor(float *r , Quaternion q)
+{
+    double xx = q.x * q.x * 2.0;
+    double yy = q.y * q.y * 2.0;
+    double zz = q.z * q.z * 2.0;
+    double xy = q.x * q.y * 2.0;
+    double yz = q.y * q.z * 2.0;
+    double zx = q.z * q.x * 2.0;
+    double xw = q.x * q.w * 2.0;
+    double yw = q.y * q.w * 2.0;
+    double zw = q.z * q.w * 2.0;
+    double r1[16]={ 1.0 - yy - zz, xy + zw, zx - yw, 0.0,
+        xy - zw, 1.0 - zz - xx, yz + xw, 0.0,
+        zx + yw, yz - xw, 1.0 - xx - yy, 0.0,
+        0.0, 0.0, 0.0, 1.0};
+    for (int i = 0;i < 16;i++) {
+        r[i]=r1[i];
+    }
+}
+
+
 void MMD_Header::read(FILE* fp){
     // アライメントがそろっていないので、自前で読み込む
     fread(magic, 1, 3, fp);
@@ -310,17 +346,29 @@ void MMD_Bone::read(FILE* fp)
 
 void MMD_Bone::draw()
 {
+    // 回転行列はクォータニオンとして与えられるので、回転行列に変換する
+    qtor(rot_mat, quot);
+
     glTranslatef(tx, ty, tz);
+    glMultMatrixf(rot_mat);
+
     // glutSolidCone(底面の半径,円錐の高さ,円の分割数,高さの分割数)　
-    glutSolidCone(1, 2, 10, 1);
+    glutSolidCone(0.5f, 2.2f, 10, 1);
 }
 
-void MMD_Bone::set_translate(float tx, float ty, float tz)
+void MMD_Bone::set_translate(float itx, float ity, float itz)
 {
+    tx = itx;
+    ty = ity;
+    tz = itz;
 }
 
-void MMD_Bone::set_rotation(float qx, float qy, float qz, float qw)
+void MMD_Bone::set_rotation(float iqx, float iqy, float iqz, float iqw)
 {
+    quot.x = iqx;
+    quot.y = iqy;
+    quot.z = iqz;
+    quot.w = iqw;
 }
 
 

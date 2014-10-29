@@ -17,6 +17,14 @@
 #include "BmpIoLib.h"
 
 
+//クォータニオン構造体
+struct Quaternion{
+    float w;
+    float x;
+    float y;
+    float z;
+};
+
 
 // MMDファイルのヘッダを表現するクラス
 class MMD_Header{
@@ -160,7 +168,8 @@ public: // 暫定
     // ファイルフォーマットには含まれていない。
     // TODO : ファイルフォーマットとは分離したい
     float       tx,ty,tz;
-    float       qx,qy,qz,qw;
+    Quaternion  quot;
+    float       rot_mat[4*4];
 public:
     MMD_Bone();
     ~MMD_Bone();

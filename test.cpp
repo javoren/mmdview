@@ -70,7 +70,7 @@ void disp(void)
 
     // vmdモーションを進め、適用する
     vmdfile.setMmdMotion(&mmdfile, motion_index);
-//    motion_index++;
+    motion_index++;
     printf("motion frame number = %d\n", motion_index);
 
     // パーツごとに描画する
