@@ -29,14 +29,6 @@ public:
     uint32_t    get_motion_count(){return motion_count;}
 };
 
-//クォータニオン構造体
-struct Quaternion{
-    float w;
-    float x;
-    float y;
-    float z;
-};
-
 class VMD_Motion{
 public:
     char        BoneName[15];           // ボーン名
