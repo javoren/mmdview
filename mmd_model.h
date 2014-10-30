@@ -10,6 +10,7 @@
 #include <memory.h>
 #include <map>
 #include <string>
+#include <vector>
 
 
 // 外部のライブラリ
@@ -178,6 +179,19 @@ public:
     void set_translate(float tx, float ty, float tz);
     void set_rotation(float qx, float qy, float qz, float qw);
 };
+
+// 親子関係をもとにボーンを計算するためのクラス
+class MMD_BoneNode{
+public:     // 暫定
+    MMD_BoneNode(){bone_index = 0;} // root-nodeが使うよ
+    ~MMD_BoneNode(){}
+
+    uint16_t   bone_index;      // このノードが示すボーンのインデックス
+    std::vector<MMD_BoneNode>   children;
+};
+// 子供を追加するための関数
+void add_children(uint16_t parent, uint16_t child);
+
 
 // ボーン情報の配列
 class MMD_BoneArray{

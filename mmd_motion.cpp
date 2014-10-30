@@ -93,8 +93,8 @@ void VMD_File::setMmdMotion(MMD_File* pmd, int frame_number)
             float pz = vmd_motion[i].pz;
             std::string bone_name = vmd_motion[i].BoneName;
             int index = pmd->m_bones.bone_name_dict[bone_name];
-    
-            printf("draw motion %d, index =%d\n", i, index);
+
+//            printf("draw motion %d, index =%d\n", i, index);
 
             glPushMatrix();
 

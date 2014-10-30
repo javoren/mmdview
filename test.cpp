@@ -44,7 +44,7 @@ void disp(void)
     gluPerspective(45.0, (double)WindowWidth/(double)WindowHeight, 0.1, 1000.0);
     glViewport(0, 0, WindowWidth, WindowHeight);
     gluLookAt( 
-        0.0, 10.0, -32.0,
+        0.0, 10.0, -48.0,
         0.0, 10.0, 0.0,
         0.0, 1.0, 0.0 );
 

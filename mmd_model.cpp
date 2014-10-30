@@ -22,6 +22,30 @@
 // クラス構造が整理できたら消えるはず
 extern MMD_File    mmdfile;
 extern Texture     madoka_magic;
+MMD_BoneNode       root_bone;
+
+
+// parentで指定された親ノードを探し、その子としてchidを追加する
+// 根ノードはroot_bone
+void add_children(MMD_BoneNode* node, uint16_t parent_id, uint16_t child_id)
+{
+    if(child_id == 0){  // rootである
+        node->bone_index = 0;
+    }
+
+    // 親となるべきノードを検出した
+    if(parent_id == node->bone_index){
+        MMD_BoneNode    child_node;
+        child_node.bone_index = child_id;
+        node->children.push_back(child_node);
+    }
+
+    for(int i = 0; i < node->children.size(); i++){
+        // 子ノードへ降りて、目的のparent_idがないか探す
+        MMD_BoneNode*   child = &node->children[i];
+        add_children(child, parent_id, child_id);
+    }
+}
 
 
 //演算子のオーバーロード Quaternionの積
@@ -358,9 +382,9 @@ void MMD_Bone::draw()
 
 void MMD_Bone::set_translate(float itx, float ity, float itz)
 {
-    tx = itx;
-    ty = ity;
-    tz = itz;
+    tx = itx + bone_head_pos[0];
+    ty = ity + bone_head_pos[1];
+    tz = itz + bone_head_pos[2];
 }
 
 void MMD_Bone::set_rotation(float iqx, float iqy, float iqz, float iqw)
@@ -370,7 +394,6 @@ void MMD_Bone::set_rotation(float iqx, float iqy, float iqz, float iqw)
     quot.z = iqz;
     quot.w = iqw;
 }
-
 
 MMD_BoneArray::MMD_BoneArray()
 {
@@ -390,8 +413,11 @@ void MMD_BoneArray::read(FILE* fp)
     // あとは繰り返し
     for(int i = 0;i < bone_count; i++){
         bone_array[i].read(fp);
+        // ボーンの木を構成する
+        uint16_t    parent_id = bone_array[i].parent_bone_index;
+        uint16_t    child_id = i;
+        add_children(&root_bone, parent_id, child_id);
     }
-    printf("bone array read success\n");
 
     // ボーン名をキーにしたインデックスを作成
     for(int i = 0; i < bone_count; i++){
@@ -400,14 +426,33 @@ void MMD_BoneArray::read(FILE* fp)
     }
 }
 
+// 親階層から下っていきながら描画を行う関数
+// arrayは本来は不要だが、外部から引き渡してもらうことにする
+void DrawRecarsive(MMD_BoneNode* node, MMD_BoneArray* array)
+{
+    uint16_t bone_index = node->bone_index;
+    array->bone_array[bone_index].draw();
+    for(int i = 0; i < node->children.size(); i++){
+        MMD_BoneNode* child = &node->children[i];
+        glPushMatrix();
+        DrawRecarsive(child, array);
+        glPopMatrix();
+    }
+}
+
 void MMD_BoneArray::draw()
 {
+    glPushMatrix();
+    DrawRecarsive(&root_bone, this);
+    glPopMatrix();
+#if 0
     // 全てのボーンを描画し
     for(int i = 0;i < bone_count; i++){
         glPushMatrix();
         bone_array[i].draw();
         glPopMatrix();
     }
+#endif
 }
 
 // 引数で指定されたファイルを開いて、モデルデータを読み込む
