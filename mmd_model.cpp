@@ -176,14 +176,15 @@ void MMD_VertexArray::read(FILE* fp)
     for(int i = 0;i < count; i++){
         pVertex[i].read(fp);
     }
+
+    p3dVerted = new GLfloat[count*3]; 
+    p3dNormal = new GLfloat[count*3]; 
+    pTexuv = new GLfloat[count*2];
 }
 
 void MMD_VertexArray::draw()
 {
     // 頂点, 法線, テクスチャ座標ごとの配列に置き換える
-    p3dVerted = new GLfloat[count*3]; 
-    p3dNormal = new GLfloat[count*3]; 
-    pTexuv = new GLfloat[count*2];
     for(int i = 0; i < count; i++ ){
         p3dVerted[i*3 + 0] = pVertex[i].x;
         p3dVerted[i*3 + 1] = pVertex[i].y;
