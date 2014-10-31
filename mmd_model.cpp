@@ -301,24 +301,25 @@ void MaterialArray::read(FILE* fp)
     // テクスチャを一枚ずつ読み込んでいく
     // TODO: 異なるマテリアルでも同じファイル名を指していることもあるので、
     // マテリアルとテクスチャを1:1の関係では効率悪そう。
+    int face_sum = 0;
     for(int i = 0;i < count; i++){
         mat_array[i].setpath(path);
         mat_array[i].read(fp, textureIds[i] );
+        mat_array[i].start_face = face_sum;
+        face_sum += mat_array[i].get_face_vert_count();
     }
 }
 
 
 void MaterialArray::draw(void)
 {
-    uint32_t effect_draw_count = 0;
     for(int i = 0; i < count; i++){
-        mat_array[i].draw(effect_draw_count);
-        effect_draw_count += mat_array[i].get_face_vert_count();
+        mat_array[i].draw();
     }
 }
 
 
-void Material::draw(uint32_t start_face)
+void Material::draw()
 {
     MMD_face*   face = &mmdfile.m_face;
     int face_count = this->face_vert_count;
@@ -478,9 +479,9 @@ void MMD_File::draw(void){
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-//    m_vertics.draw();
-//    m_materials.draw();
-    m_bones.draw();
+    m_vertics.draw();
+    m_materials.draw();
+//    m_bones.draw();
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);

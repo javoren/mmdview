@@ -127,6 +127,10 @@ private:
     std::string path;
     unsigned int    tex_index;
 
+public: // 暫定
+    // 描画用のパラメータ。本来はここに記述するべきではない
+    uint32_t    start_face;
+
 public:
     Material(void);
     virtual ~Material();
@@ -135,7 +139,7 @@ public:
 
     void read(FILE* fp, GLuint tex_id);
 
-    void draw(uint32_t start_face);
+    void draw();
 };
 
 // マテリアルの配列
