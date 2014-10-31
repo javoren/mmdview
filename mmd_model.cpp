@@ -436,6 +436,15 @@ void DrawRecarsive(MMD_BoneNode* node, MMD_BoneArray* array)
     array->bone_array[bone_index].draw();
     for(int i = 0; i < node->children.size(); i++){
         MMD_BoneNode* child = &node->children[i];
+        // 子ノードの描画にはいる前に
+        // 子ノードへの直線をひいておく
+        glBegin(GL_LINES);
+        MMD_Bone* p = &array->bone_array[node->bone_index];
+        MMD_Bone* c = &array->bone_array[child->bone_index];
+        glVertex3d(p->tx, p->ty, p->tz);
+        glVertex3d(c->tx, c->ty, c->tz);
+        glEnd();
+
         glPushMatrix();
         DrawRecarsive(child, array);
         glPopMatrix();
@@ -480,9 +489,9 @@ void MMD_File::draw(void){
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    m_vertics.draw();
-    m_materials.draw();
-//    m_bones.draw();
+//    m_vertics.draw();
+//    m_materials.draw();
+    m_bones.draw();
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
