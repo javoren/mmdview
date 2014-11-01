@@ -454,6 +454,7 @@ void DrawRecarsive(MMD_BoneNode* node, MMD_BoneArray* array)
 void MMD_BoneArray::draw()
 {
     glPushMatrix();
+    glTranslatef(10, 0, 0);
     DrawRecarsive(&root_bone, this);
     glPopMatrix();
 #if 0
@@ -489,9 +490,9 @@ void MMD_File::draw(void){
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-//    m_vertics.draw();
-//    m_materials.draw();
     m_bones.draw();
+    m_vertics.draw();
+    m_materials.draw();
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
